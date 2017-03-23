@@ -1,0 +1,9 @@
+{
+  "globals": {
+    "GM_addStyle": false,
+    "localStorage": false,
+    "$": true,
+    "jQuery": false
+  },
+  "extends": "semistandard"
+}

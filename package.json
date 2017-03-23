@@ -1,0 +1,29 @@
+{
+  "name": "greasy-monkeys",
+  "version": "1.0.0",
+  "description": "Tampermonkey scripts for Chromium or whatever browser can parse them.",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint src",
+    "lint:fix": "eslint --fix src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/szkrd/greasy-monkeys.git"
+  },
+  "keywords": [],
+  "author": "Szabolcs Kurdi <szabolcs.kurdi@gmail.com> (https://github.com/szkrd)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/szkrd/greasy-monkeys/issues"
+  },
+  "homepage": "https://github.com/szkrd/greasy-monkeys#readme",
+  "devDependencies": {
+    "eslint": "3.18.0",
+    "eslint-config-semistandard": "8.0.0",
+    "eslint-config-standard": "7.1.0",
+    "eslint-plugin-promise": "3.5.0",
+    "eslint-plugin-react": "6.10.3",
+    "eslint-plugin-standard": "2.1.1"
+  }
+}
