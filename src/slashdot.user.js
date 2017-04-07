@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         slashdot
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.1
 // @description  Once a great site, now just a shadow of its former self.
 // @author       szkrd
 // @match        https://*.slashdot.org/*
@@ -54,5 +54,6 @@
 
   $(() => {
     $(`strong:containsi("The Fine Print:")`).closest('aside').addClass('js-hide');
+    $(`.ntv-sponsored-disclaimer`).closest('article').addClass('js-hide');
   });
 })();
