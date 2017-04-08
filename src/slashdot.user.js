@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         slashdot
 // @namespace    http://tampermonkey.net/
-// @version      1.1
+// @version      1.2
 // @description  Once a great site, now just a shadow of its former self.
 // @author       szkrd
 // @match        https://*.slashdot.org/*
@@ -43,6 +43,13 @@
     // nope, we are not feeding the trolls
     .inline_comment { display: none; }
     .by a, .otherdetails a { visibility: hidden; }
+
+    // colors
+    .nav-wrap, .nav-search-form input[type="text"] { background-color: #aaa; border-color: #777; }
+    div#firehose article header h2 { background-color: #f2f2f2; border-radius: 5px 5px 0 0; }
+    div#firehose article header h2 *, .nav-wrap * { color: #333 !!!; }
+    span.comment-bubble { background-color: transparent; }
+    span.comment-bubble:after { display: none; }
   `;
 
   GM_addStyle(css.replace(/\/\/ .*/g, '').replace(/!!!/g, '!important'));
@@ -53,7 +60,10 @@
   );
 
   $(() => {
-    $(`strong:containsi("The Fine Print:")`).closest('aside').addClass('js-hide');
-    $(`.ntv-sponsored-disclaimer`).closest('article').addClass('js-hide');
+    let addExtraClasses = () => {
+      $(`strong:containsi("The Fine Print:")`).closest('aside').addClass('js-hide');
+      $(`.ntv-sponsored-disclaimer`).closest('article').addClass('js-hide');
+    };
+    setTimeout(addExtraClasses, 500);
   });
 })();
