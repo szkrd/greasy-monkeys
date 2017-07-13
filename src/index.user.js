@@ -47,6 +47,7 @@
     // tricky ads
     div[class$=-text-ad],
     .nativead,
+    .bcs-black-container,
 
     // pager on the left and link to i2 on the right
     .lapozo-bal, .lapozo-jobb,
