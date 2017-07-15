@@ -20,6 +20,7 @@
     .content-above-header,
     .m-cf-fejlec,
     .header-parts,
+    .t-event-bar,
 
     // mindekozben, MTI, best of
     .pp-hasab,
