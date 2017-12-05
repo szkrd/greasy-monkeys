@@ -22,6 +22,7 @@
     span.ts_tip_float.message_current_status { display: none !important; }
 
     // mute avatars
+    .member_image,
     div.message_icon { filter: grayscale(100%); }
 
     // apps section in sidebar
