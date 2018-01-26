@@ -8,25 +8,29 @@
 // @grant        GM_addStyle
 // ==/UserScript==
 
-(function() {
+(function () {
   'use strict';
-  
+
   // color scheme for copy-pasting:
   // `#343434,#242424,#c8427e,#fff2fa,#242424,#FFFFFF,#d74da5,#DE4C0D`
 
   let css = `
     // reactions
-    .rxn_panel { display: none; }
+    .rxn_panel, div.c-reaction_bar { display: none; }
 
     // icon next to name
     span.ts_tip_float.message_current_status { display: none !important; }
 
     // mute avatars
-    .member_image,
+    .member_image, img.c-avatar__image,
     div.message_icon { filter: grayscale(100%); }
 
     // apps section in sidebar
     div[data-qa-channel-sidebar-section-heading="apps"] { display: none; }
+
+    // bloated header
+    #client_header { flex-basis: 5px; overflow: hidden; }
+    #client_header:hover { flex-basis: 53px; }
   `;
 
   GM_addStyle(css.replace(/\/\/ .*/g, ''));
