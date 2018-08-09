@@ -53,7 +53,7 @@
     // authors
     body .note-header-author-name, body a.author_link span { display: inline-block; }
     body .note-header-author-name, body a.author_link[href$="rdi"] span { color: tan; }
-    body .note-header-author-name, body a.author_link[href$="jko"] span { color: palegreen; }
+    body .note-header-author-name, body a.author_link[href$="jko"] span { color: limegreen; }
     body .note-header-author-name, body a.author_link[href$="rga"] span { color: salmon; }
     body .note-header-author-name, body a.author_link[href$="baly"] span { color: pink; }
     body .note-header-author-name, body a.author_link[href$="oth"] span { color: orange; }
@@ -61,7 +61,7 @@
     body .note-header-author-name, body a.author_link[href$="nde"] span { color: lightgrey; }
     // +
     body a.user-avatar-link[href$="rdi"] img { box-shadow: 0 0 1px 3px tan; }
-    body a.user-avatar-link[href$="jko"] img { box-shadow: 0 0 1px 3px palegreen; }
+    body a.user-avatar-link[href$="jko"] img { box-shadow: 0 0 1px 3px limegreen; }
     body a.user-avatar-link[href$="rga"] img { box-shadow: 0 0 1px 3px salmon; }
     body a.user-avatar-link[href$="baly"] img { box-shadow: 0 0 1px 3px pink; }
     body a.user-avatar-link[href$="oth"] img { box-shadow: 0 0 1px 3px orange; }
@@ -107,6 +107,7 @@
     body .boards-list { overflow-x: auto; }
     .board-card-footer button.badge { opacity: .6; box-shadow: 0 0 12px 2px inset #fff; }
     .board-card-footer button.badge:hover { opacity: 1; box-shadow: none; }
+    ul.notes.timeline { margin: 52px 0 0 0px; }
 
     // base
     .btn { background: linear-gradient(to bottom, #eff5f9 0%,#c5d1db 100%); }
@@ -118,7 +119,7 @@
     a#state-merged { color: blue; }
 
     // compress
-    .navbar-gitlab .container-fluid .nav>li>a { margin: 0; padding: 6px 4px; } // top right buttons 
+    .navbar-gitlab .container-fluid .nav>li>a { margin: 0; padding: 6px 4px; } // top right buttons
     ul.projects-list > li { padding: 0; line-height: 16px; }
     nav.breadcrumbs { min-height: 30px; }
     body table.table tr td { padding: 2px; }
