@@ -9,21 +9,21 @@
 // ==/UserScript==
 
 (function () {
-  'use strict';
+    'use strict';
 
   // color scheme for copy-pasting:
   // `#343434,#242424,#c8427e,#fff2fa,#242424,#FFFFFF,#d74da5,#DE4C0D`
 
-  function loop () {
-    let sbLinkButtons = Array.from(document.querySelectorAll('.p-channel_sidebar__link'));
-    sbLinkButtons.forEach(el => {
-      if (el.textContent === '+ Add Apps') {
-        el.classList.add('add-apps-button');
-      }
-    });
-  }
+    function loop () {
+        let sbLinkButtons = Array.from(document.querySelectorAll('.p-channel_sidebar__link'));
+        sbLinkButtons.forEach(el => {
+            if (el.textContent === '+ Add Apps') {
+                el.classList.add('add-apps-button');
+            }
+        });
+    }
 
-  let css = `
+    let css = `
     // reactions
     .rxn_panel, div.c-reaction_bar { display: none; }
 
@@ -45,6 +45,6 @@
     .add-apps-button { display: none; }
   `;
 
-  GM_addStyle(css.replace(/\/\/ .*/g, ''));
-  setInterval(loop, 1000);
+    GM_addStyle(css.replace(/\/\/ .*/g, ''));
+    setInterval(loop, 1000);
 })();

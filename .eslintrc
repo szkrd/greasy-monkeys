@@ -5,5 +5,11 @@
     "$": true,
     "jQuery": false
   },
-  "extends": "semistandard"
+  "extends": "semistandard",
+    "rules": {
+        "indent": [
+            "error",
+            4
+        ]
+    }
 }

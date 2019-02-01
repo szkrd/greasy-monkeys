@@ -10,10 +10,10 @@
 // ==/UserScript==
 
 (function () {
-  'use strict';
+    'use strict';
   // runat: default
 
-  let css = `
+    let css = `
     // ads and anti-social
     div[class*="addthis_"], a[class*="addthis_"],
     #divAds2,
@@ -39,39 +39,39 @@
     .divCloseBut a { color: gray; }
   `;
 
-  GM_addStyle(css.replace(/\/\/ .*/g, '').replace(/!!!/g, '!important'));
+    GM_addStyle(css.replace(/\/\/ .*/g, '').replace(/!!!/g, '!important'));
 
   // case insensitive contains pseudo
-  $.expr[':'].containsi = $.expr.createPseudo((arg) =>
+    $.expr[':'].containsi = $.expr.createPseudo((arg) =>
     (elem) => $(elem).text().toUpperCase().includes(arg.toUpperCase())
   );
 
-  let killCookies = () => document.cookie.split(';').forEach((c) => {
-    document.cookie = c.replace(/^ +/, '').replace(/=.*/, '=;expires=' + new Date().toUTCString() + ';path=/');
-  });
+    let killCookies = () => document.cookie.split(';').forEach((c) => {
+        document.cookie = c.replace(/^ +/, '').replace(/=.*/, '=;expires=' + new Date().toUTCString() + ';path=/');
+    });
 
-  let flushStorages = () => {
-    localStorage.clear();
-    killCookies();
-  };
+    let flushStorages = () => {
+        localStorage.clear();
+        killCookies();
+    };
 
   // ---
 
-  $(() => {
-    flushStorages();
-    setTimeout(() => {
-      window.onunload = flushStorages;
-      window.onbeforeunload = () => {};
-    }, 2000);
+    $(() => {
+        flushStorages();
+        setTimeout(() => {
+            window.onunload = flushStorages;
+            window.onbeforeunload = () => {};
+        }, 2000);
 
-    $('.barTitle:containsi("comments")').closest('.bigBarContainer').addClass('js-hide');
+        $('.barTitle:containsi("comments")').closest('.bigBarContainer').addClass('js-hide');
 
     // external videos are "not good"
-    setTimeout(() => {
-      $('#divContentVideo > iframe').each((i, el) => {
-        let src = el.src;
-        $(`<a href="${src}" target="_blank">iframe src</a><br>`).insertBefore(el);
-      });
-    }, 3000);
-  }); // end domcontentloaded
+        setTimeout(() => {
+            $('#divContentVideo > iframe').each((i, el) => {
+                let src = el.src;
+                $(`<a href="${src}" target="_blank">iframe src</a><br>`).insertBefore(el);
+            });
+        }, 3000);
+    }); // end domcontentloaded
 })();

@@ -9,10 +9,10 @@
 // @grant        GM_addStyle
 // ==/UserScript==
 (function () {
-  'use strict';
+    'use strict';
   // runat: document start
 
-  let css = `
+    let css = `
     // generic
     .hirdetes,
 
@@ -84,21 +84,21 @@
     h3 .blokk-label { visibility: hidden; }
   `;
 
-  GM_addStyle(css.replace(/\/\/ .*/g, ''));
+    GM_addStyle(css.replace(/\/\/ .*/g, ''));
 
   // case insensitive contains pseudo
-  $.expr[':'].containsi = $.expr.createPseudo((arg) =>
+    $.expr[':'].containsi = $.expr.createPseudo((arg) =>
     (elem) => $(elem).text().toUpperCase().includes(arg.toUpperCase())
   );
 
-  $(() => {
-    $('a.cimke.cimke-rovat:contains("Sport")').closest('.blokk').addClass('helper-sport-block');
-    $('article.velemeny-anyag').closest('.cimlap-anyag').addClass('opinion-teaser');
-    $('div.index2').nextAll('section, div').addClass('index2-and-below');
-    $('img[src$=gif], img[data-original$=gif]').closest('div').addClass('gif-ahead');
-    $('section.index-header').prevAll('div.container').addClass('content-above-header');
+    $(() => {
+        $('a.cimke.cimke-rovat:contains("Sport")').closest('.blokk').addClass('helper-sport-block');
+        $('article.velemeny-anyag').closest('.cimlap-anyag').addClass('opinion-teaser');
+        $('div.index2').nextAll('section, div').addClass('index2-and-below');
+        $('img[src$=gif], img[data-original$=gif]').closest('div').addClass('gif-ahead');
+        $('section.index-header').prevAll('div.container').addClass('content-above-header');
 
-    let blacklist = (word) => $(`h1 a:containsi("${word}")`).closest('.cimlap-anyag, .cimlap-blokk-index').addClass('dumb-content');
-    ['ötös lottó', 'hatos lotto', 'szex', 'szavazzon'].forEach(word => blacklist(word));
-  });
+        let blacklist = (word) => $(`h1 a:containsi("${word}")`).closest('.cimlap-anyag, .cimlap-blokk-index').addClass('dumb-content');
+        ['ötös lottó', 'hatos lotto', 'szex', 'szavazzon'].forEach(word => blacklist(word));
+    });
 })();

@@ -9,16 +9,16 @@
 // @grant        GM_addStyle
 // ==/UserScript==
 (function () {
-  'use strict';
+    'use strict';
   // runat: document start
 
-  GM_addStyle(`
+    GM_addStyle(`
     #videooverlay { display: none !important; }
   `);
 
-  $(() => {
-    window.popAdsLoaded = true;
-    $('#videooverlay').click();
-    $('div[style*=9999999]').remove();
-  });
+    $(() => {
+        window.popAdsLoaded = true;
+        $('#videooverlay').click();
+        $('div[style*=9999999]').remove();
+    });
 })();

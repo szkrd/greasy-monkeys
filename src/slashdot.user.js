@@ -9,10 +9,10 @@
 // @grant        GM_addStyle
 // ==/UserScript==
 (function () {
-  'use strict';
+    'use strict';
   // runat: document start
 
-  let css = `
+    let css = `
     // my who-cares list
     .js-hide,
     ul.nav-site,
@@ -52,18 +52,18 @@
     span.comment-bubble:after { display: none; }
   `;
 
-  GM_addStyle(css.replace(/\/\/ .*/g, '').replace(/!!!/g, '!important'));
+    GM_addStyle(css.replace(/\/\/ .*/g, '').replace(/!!!/g, '!important'));
 
   // case insensitive contains pseudo
-  $.expr[':'].containsi = $.expr.createPseudo((arg) =>
+    $.expr[':'].containsi = $.expr.createPseudo((arg) =>
     (elem) => $(elem).text().toUpperCase().includes(arg.toUpperCase())
   );
 
-  $(() => {
-    let addExtraClasses = () => {
-      $(`strong:containsi("The Fine Print:")`).closest('aside').addClass('js-hide');
-      $(`.ntv-sponsored-disclaimer`).closest('article').addClass('js-hide');
-    };
-    setTimeout(addExtraClasses, 500);
-  });
+    $(() => {
+        let addExtraClasses = () => {
+            $(`strong:containsi("The Fine Print:")`).closest('aside').addClass('js-hide');
+            $(`.ntv-sponsored-disclaimer`).closest('article').addClass('js-hide');
+        };
+        setTimeout(addExtraClasses, 500);
+    });
 })();
