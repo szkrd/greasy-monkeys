@@ -13,8 +13,9 @@
 
     // add group classes to body
     const $ = window.$;
-    const currentGroup = $('body').data('page').split(':')[1];
-    $('body').addClass('gmg_current-group_' + currentGroup);
+    const $body = $('body');
+    const currentGroup = $body.data('page').split(':')[1];
+    $body.addClass('gmg_current-group_' + currentGroup);
 
     const groups = {
         projects: ['show', 'activity', 'cycle_analytics'],
@@ -196,7 +197,6 @@ a.dashboard-shortcuts-snippets { display: none !important; }
     // add a submit button to the board filter
     $('#js-add-list')
         .prepend('<button class="btn gmg-submit">Submit</submit>');
-    $('btn gmg-submit').on('click', () => { $('form.filter-form').get(0).submit(); });
 
     // fetch all mr-s for visible mr ids
     $(document).keypress('m', (event) => {
