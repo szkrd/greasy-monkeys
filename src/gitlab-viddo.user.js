@@ -230,7 +230,7 @@ a.dashboard-shortcuts-snippets { display: none !important; }
             const mergeRelated = notes.filter(item => (item.note || '').includes('mentioned in merge request'));
             mergeRelated.forEach(item => {
                 item.mrId = item.note.replace(/[^\d]/g, '');
-                item.mrUrl = `${projectUriPrefix}/merge_requests/`;
+                item.mrUrl = `${projectUriPrefix}/merge_requests/${item.mrId}`;
                 item.mrIsOpen = !item.note_html.includes('(closed)');
                 item.mrMetaUrlRaw = `${projectUriPrefix}/merge_requests/${item.mrId}.json`;
                 item.mrMetaUrl = item.mrMetaUrlRaw + '?serializer=sidebar';
@@ -257,8 +257,8 @@ a.dashboard-shortcuts-snippets { display: none !important; }
             // fetch mrs one by one along with their metadata
             openMrs.forEach(item => {
                 $.getJSON(item.mrMetaUrl, mrMeta => {
-                    const assigneName = (mrMeta.assignee || {}).name || '';
-                    const isHoncho = assigneName.toLowerCase().includes('paul');
+                    const assigneeName = (mrMeta.assignee || {}).name || 'unassigned';
+                    const isHoncho = assigneeName.toLowerCase().includes('paul');
                     $.getJSON(item.mrMetaUrlRaw, mrMetaRaw => {
                         const isWip = mrMetaRaw.title.startsWith('WIP:');
                         const wipText = isWip ? '🔨 WIP' : '';
@@ -266,7 +266,7 @@ a.dashboard-shortcuts-snippets { display: none !important; }
                             .toggleClass('gmg_mr_wip', isWip)
                             .toggleClass('gmg_mr_final', isHoncho)
                             .find('.gmg_mr_meta')
-                            .text(wipText + ' ' + assigneName);
+                            .text(wipText + ' ' + assigneeName);
                     });
                 });
             });
