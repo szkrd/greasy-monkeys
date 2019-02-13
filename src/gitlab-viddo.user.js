@@ -71,7 +71,7 @@ body a.user-avatar-link[href$="nde"] img { box-shadow: 0 0 1px 3px lightgrey; }
 // ===========
 body div.board-card-assignee { right: 2px !important; }
 body .board-card-assignee a.user-avatar-link img { width: 25px; height: 25px; }
-body .board-card-title { margin-right: 35px; }
+body .board-card-header { margin-right: 35px; }
 body .board-card { padding: 2px 10px 2px 8px; }
 body .boards-list { overflow-x: auto; }
 
@@ -171,8 +171,8 @@ body .gfm.gfm-issue { color: #007bff; }
 
 // merge request info checker and content (injected)
 // =================================================
-.board-card-title .board-card-number { cursor: pointer; }
-.board-card-title .board-card-number:hover { color: blue; text-decoration: underline; }
+.board-card-number { cursor: pointer; }
+.board-card-number:hover { color: blue; text-decoration: underline; }
 .gmg_mr_id { opacity: .5; }
 .gmg_mr_wip { color: red; }
 .gmg_mr_final { color: seagreen; }
@@ -201,22 +201,22 @@ a.dashboard-shortcuts-snippets { display: none !important; }
     // fetch all mr-s for visible mr ids
     $(document).keypress('m', (event) => {
         if (event.ctrlKey) {
-            $('.board-card-title .board-card-number').filter(':visible').click();
+            $('.board-card-number').filter(':visible').click();
         }
     });
 
     // add card title tiny button for getting merge requests
     $(document.body).on('click', (event) => {
         const el = $(event.target);
-        if (!el.is('.board-card-title .board-card-number')) {
+        if (!el.is('.board-card-number')) {
             return;
         }
         if (event.shiftKey) { // refresh all in this column
-            el.closest('.board-list').find('.board-card-title .board-card-number').filter(':visible').click();
+            el.closest('.board-list').find('.board-card-number').filter(':visible').click();
             return false;
         }
         const issueId = el.text().replace(/[^\d]/g, '');
-        const projectUriPrefix = el.parent().find('a').attr('href').replace(/\/issues.*/, '');
+        const projectUriPrefix = el.closest('li').find('a').attr('href').replace(/\/issues.*/, '');
         if (!issueId || !projectUriPrefix) {
             console.error('issue id or project location not found');
             return;
