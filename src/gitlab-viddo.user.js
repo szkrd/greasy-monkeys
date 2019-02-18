@@ -179,6 +179,13 @@ body .gfm.gfm-issue { color: #007bff; }
 .gmg_mr_final::after { content: " 👁"; }
 .gmg_mr_none { color: gray; }
 
+// create merge request
+// ====================
+.new-branch-col { text-align: inherit !important; } // move it left to the place of like-dislike emoji
+.btn.js-create-merge-request.btn-success.btn-inverted { // we never branch from master, so this button is a real pain
+  pointer-events: none;
+}
+
 // trash
 // =====
 .block div.time_tracker,
