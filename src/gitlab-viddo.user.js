@@ -177,6 +177,8 @@ body .gfm.gfm-issue { color: #007bff; }
 .gmg_mr_wip { color: red; }
 .gmg_mr_final { color: seagreen; }
 .gmg_mr_final::after { content: " 👁"; }
+.gmg_mr_merged { color: green; }
+.gmg_mr_merged::after { content: " ✅"; }
 .gmg_mr_none { color: gray; }
 
 // create merge request
@@ -267,11 +269,13 @@ a.dashboard-shortcuts-snippets { display: none !important; }
                     const assigneeName = (mrMeta.assignee || {}).name || 'unassigned';
                     const isHoncho = assigneeName.toLowerCase().includes('paul');
                     $.getJSON(item.mrMetaUrlRaw, mrMetaRaw => {
+                        const isMerged = mrMetaRaw.state === 'merged';
                         const isWip = mrMetaRaw.title.startsWith('WIP:');
                         const wipText = isWip ? '🔨 WIP' : '';
                         $(`[data-mrid=${item.mrId}]`)
                             .toggleClass('gmg_mr_wip', isWip)
                             .toggleClass('gmg_mr_final', isHoncho)
+                            .toggleClass('gmg_mr_merged', isMerged)
                             .find('.gmg_mr_meta')
                             .text(wipText + ' ' + assigneeName);
                     });
