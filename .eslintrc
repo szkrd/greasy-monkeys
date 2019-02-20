@@ -5,6 +5,9 @@
     "$": true,
     "jQuery": false
   },
+  "env": {
+    "browser": true
+  },
   "extends": "semistandard",
     "rules": {
         "indent": [
