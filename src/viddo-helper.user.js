@@ -18,8 +18,104 @@
 #monkey-menu:hover li { display: block; }
 #monkey-menu li { font-weight: bold; cursor: pointer; padding: 2px 5px; display: none; }
 #monkey-menu li.action:hover { text-decoration: underline; }
+
+#monkey-react-path { display: none; z-index: 9999; font-size: 10; position: fixed; background: #f2f2f2; padding: 1px 3px; border-top: 1px solid #cfcfcf; border-left: 1px solid #cfcfcf; border-radius: 3px 0 0 0; bottom: 0; right: 0; }
+#monkey-react-path a { cursor: pointer; padding: 2px 3px; display: inline-block; }
+#monkey-react-path a:hover { text-decoration: underline; }
 `;
     GM_addStyle(css.replace(/\/\/ .*/g, ''));
+
+    // react path
+    // ==========
+
+    function getNodeName (node) {
+        let name;
+        const { stateNode } = ((node || {})._debugOwner || {});
+        const type = (node._debugOwner || {}).type;
+        const stateNodeName = ((stateNode || {}).constructor || {}).name;
+        const hasTypeFn = type && (typeof type === 'object' || typeof type === 'function');
+        if (hasTypeFn) {
+            name = type.name;
+        } else if (stateNodeName) {
+            name = stateNodeName;
+        }
+        return name;
+    }
+
+    function getElementName (element) {
+        let name, node;
+        for (let key in element) {
+            if (key.toLowerCase().includes('reactinternalinstance')) {
+                node = element[key];
+                name = getNodeName(node);
+                break;
+            }
+        }
+        // skip one level and try to fallback to type fn name
+        if (/^FontAwesome/.test(name) && node._debugOwner) {
+            name = getNodeName(node._debugOwner);
+        }
+        return { node, name };
+    }
+
+    function getElementTree (element) {
+        let names = [];
+        let $el = $(element);
+        while ($el && $el.length && !$el.is('body')) {
+            const name = getElementName($el.get(0)).name;
+            if (name && name !== 'Content' && names[names.length - 1] !== name) {
+                names.push(name);
+            }
+            $el = $el.parent();
+        }
+        names = names.reverse();
+        return names;
+    }
+
+    let reactPathLogger = !!localStorage.getItem('__reactPath');
+    function createReactPathLogger () {
+        const moReactPath = $('<div id="monkey-react-path"></div>');
+        moReactPath.prependTo(document.body);
+        moReactPath.on('click', (e) => {
+            const $el = $(e.target);
+            if (!$el.is('a')) {
+                return;
+            }
+            const text = $el.text() + '.tsx';
+            var copy = function (e) {
+                e.preventDefault();
+                if (e.clipboardData) {
+                    e.clipboardData.setData('text/plain', text);
+                } else if (window.clipboardData) {
+                    window.clipboardData.setData('Text', text);
+                }
+            };
+            window.addEventListener('copy', copy);
+            document.execCommand('copy');
+            window.removeEventListener('copy', copy);
+        });
+        if (reactPathLogger) {
+            moReactPath.show();
+        }
+        let throttleTimer;
+        $(document).on('mousemove', (e) => {
+            if (!reactPathLogger) {
+                return;
+            }
+            clearTimeout(throttleTimer);
+            throttleTimer = null;
+            throttleTimer = setTimeout(() => {
+                const tree = getElementTree(e.target);
+                if (tree.length) {
+                    moReactPath.html(tree.map(s => `<a>${s}</a>`).join(' ↘ '));
+                }
+            }, 500);
+        });
+        return moReactPath;
+    }
+
+    // tester
+    // ======
 
     function fillInput (el, value) {
         el = $(el).get(0);
@@ -30,6 +126,9 @@
         nativeInputValueSetter.call(el, value);
         el.dispatchEvent(new Event('input', { bubbles: true }));
     }
+
+    // menu
+    // ====
 
     function addMenuItem (target, title, action, flush) {
         if (flush) {
@@ -86,7 +185,7 @@
         return moMenu;
     }
 
-    function addStorageSwitcherMenuItem (target, name, value) {
+    function addStorageSwitcherMenuItem (target, name, text, value, actionTrue, actionFalse) {
         const key = `_${name}`;
         const action = () => {
             const thisMenuItem = $(`#monkey-menu-switcher-${name}`);
@@ -94,13 +193,15 @@
             if (current) {
                 thisMenuItem.text(thisMenuItem.text().replace('☑', '☐'));
                 localStorage.removeItem(key);
+                if (actionFalse) { actionFalse(); }
             } else {
                 thisMenuItem.text(thisMenuItem.text().replace('☐', '☑'));
                 localStorage.setItem(key, value);
+                if (actionTrue) { actionTrue(); }
             }
         };
         const current = localStorage.getItem(key);
-        const title = (current ? '☑' : '☐') + ` ls ${name}`;
+        const title = (current ? '☑' : '☐') + ' ' + text;
         const menuItem = $(`<li id="monkey-menu-switcher-${name}">${title}</li>`);
         menuItem.on('click', action);
         menuItem.addClass('action');
@@ -108,18 +209,21 @@
         return menuItem;
     }
 
-    // ---
+    // run
+    // ===
 
     (() => {
         const menu = createMenu();
         const staticList = $('#monkey-menu-static');
         addMenuItem(staticList, 'logout', () => { window.location.href = '/logout'; });
-        addStorageSwitcherMenuItem(staticList, 'logRedux', '1');
-        addStorageSwitcherMenuItem(staticList, 'logHlsjs', '1');
-        addStorageSwitcherMenuItem(staticList, 'logAxios', '1');
-        addStorageSwitcherMenuItem(staticList, 'logSocketio', '1');
-        addStorageSwitcherMenuItem(staticList, 'logTimeStamp', '1');
-        addStorageSwitcherMenuItem(staticList, 'logLevel', '0');
+        addStorageSwitcherMenuItem(staticList, 'logRedux', 'log redux', '1');
+        addStorageSwitcherMenuItem(staticList, 'logHlsjs', 'log hls', '1');
+        addStorageSwitcherMenuItem(staticList, 'logAxios', 'log axios', '1');
+        addStorageSwitcherMenuItem(staticList, 'logSocketio', 'log socketio', '1');
+        addStorageSwitcherMenuItem(staticList, 'logTimeStamp', 'log with timestamps', '1');
+        addStorageSwitcherMenuItem(staticList, 'logLevel', 'log verbosity all', '0');
         menu.on('mouseenter', updatePathMenu);
+        const rpLogger = createReactPathLogger();
+        addStorageSwitcherMenuItem(staticList, '_reactPath', 'react path', '1', () => { reactPathLogger = true; rpLogger.show(); }, () => { reactPathLogger = false; rpLogger.hide(); });
     })();
 })();
