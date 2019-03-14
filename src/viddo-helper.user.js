@@ -209,6 +209,20 @@
         return menuItem;
     }
 
+    function printTokens () {
+        try {
+            const tokens = JSON.parse(unescape(document.cookie.split(';').find(s => s.trim().startsWith('tokens')).replace(/.*tokens=/, '')));
+            console.log('refreshToken:', tokens.refreshToken || '?');
+            const parsed = JSON.parse(atob(tokens.token.split('.')[1]));
+            const expired = (new Date().getTime() / 1000) > parsed.exp;
+            parsed.exp = parsed.exp ? new Date(parsed.exp * 1000).toLocaleString() : null;
+            parsed.iat = parsed.iat ? new Date(parsed.iat * 1000).toLocaleString() : null;
+            console.log(`token (${expired ? 'expired' : 'not expired'}):`, parsed);
+        } catch (error) {
+            console.log('failed to decode tokens');
+        }
+    }
+
     // run
     // ===
 
@@ -216,6 +230,7 @@
         const menu = createMenu();
         const staticList = $('#monkey-menu-static');
         addMenuItem(staticList, 'logout', () => { window.location.href = '/logout'; });
+        addMenuItem(staticList, 'tokens', printTokens);
         addStorageSwitcherMenuItem(staticList, 'logRedux', 'log redux', '1');
         addStorageSwitcherMenuItem(staticList, 'logHlsjs', 'log hls', '1');
         addStorageSwitcherMenuItem(staticList, 'logAxios', 'log axios', '1');
