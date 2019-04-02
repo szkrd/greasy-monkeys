@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Gitlab
 // @namespace    http://tampermonkey.net/
-// @version      0.3
+// @version      0.4
 // @description  Colorful gitlab!
 // @author       szkrd
 // @match        https://gitlab.viddo.net/*
@@ -48,26 +48,29 @@
         blue: '#103875'
     };
 
+    const authorColors = {
+        rdi: 'tan',
+        jko: 'limegreen',
+        rga: 'salmon',
+        baly: 'pink',
+        abas: 'dimgray',
+        etal: 'lightseagreen',
+        oth: 'orange',
+        ulik: 'deepskyblue',
+        nde: 'lightgrey'
+    };
+
+    const authorColorsCss = '\n' + Object.keys(authorColors).map(name => {
+        const color = authorColors[name];
+        return `body .note-header-author-name, body a.author_link[href$="${name}"] span { color: ${color}; }\n` +
+            `body a.user-avatar-link[href$="${name}"] img { box-shadow: 0 0 1px 3px ${color}; }`;
+    }).join('\n') + '\n';
+
     let css = `
 // authors
 // =======
 body .note-header-author-name, body a.author_link span { display: inline-block; }
-body .note-header-author-name, body a.author_link[href$="rdi"] span { color: tan; }
-body .note-header-author-name, body a.author_link[href$="jko"] span { color: limegreen; }
-body .note-header-author-name, body a.author_link[href$="rga"] span { color: salmon; }
-body .note-header-author-name, body a.author_link[href$="baly"] span { color: pink; }
-body .note-header-author-name, body a.author_link[href$="abas"] span { color: lightseagreen; }
-body .note-header-author-name, body a.author_link[href$="oth"] span { color: orange; }
-body .note-header-author-name, body a.author_link[href$="ulik"] span { color: deepskyblue; }
-body .note-header-author-name, body a.author_link[href$="nde"] span { color: lightgrey; }
-body a.user-avatar-link[href$="rdi"] img { box-shadow: 0 0 1px 3px tan; }
-body a.user-avatar-link[href$="jko"] img { box-shadow: 0 0 1px 3px limegreen; }
-body a.user-avatar-link[href$="rga"] img { box-shadow: 0 0 1px 3px salmon; }
-body a.user-avatar-link[href$="baly"] img { box-shadow: 0 0 1px 3px pink; }
-body a.user-avatar-link[href$="abas"] img { box-shadow: 0 0 1px 3px lightseagreen; }
-body a.user-avatar-link[href$="oth"] img { box-shadow: 0 0 1px 3px orange; }
-body a.user-avatar-link[href$="ulik"] img { box-shadow: 0 0 1px 3px deepskyblue; }
-body a.user-avatar-link[href$="nde"] img { box-shadow: 0 0 1px 3px lightgrey; }
+${authorColorsCss}
 
 // board cards
 // ===========
