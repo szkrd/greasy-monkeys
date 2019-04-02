@@ -61,7 +61,7 @@
         nde: 'lightgrey'
     };
 
-    const authorSelfColor = localStorage.getItem('auhorSelfColor');
+    const authorSelfColor = localStorage.getItem('authorSelfColor');
     const currentUserName = gon.current_username
     if (currentUserName && authorSelfColor) {
         authorColors[currentUserName] = authorSelfColor;
