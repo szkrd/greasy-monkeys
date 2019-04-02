@@ -1,5 +1,6 @@
 {
   "globals": {
+    "unsafeWindow": false,
     "GM_addStyle": false,
     "localStorage": false,
     "$": true,
