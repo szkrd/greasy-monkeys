@@ -13,6 +13,7 @@
 
     // add group classes to body
     const $ = window.$;
+    const gon = unsafeWindow.gon || {}; // "gon" is a gitlab global
     const $body = $('body');
     const currentGroup = $body.data('page').split(':')[1];
     $body.addClass('gmg_current-group_' + currentGroup);
@@ -59,6 +60,12 @@
         ulik: 'deepskyblue',
         nde: 'lightgrey'
     };
+
+    const authorSelfColor = localStorage.getItem('auhorSelfColor');
+    const currentUserName = gon.current_username
+    if (currentUserName && authorSelfColor) {
+        authorColors[currentUserName] = authorSelfColor;
+    }
 
     const authorColorsCss = '\n' + Object.keys(authorColors).map(name => {
         const color = authorColors[name];
