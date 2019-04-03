@@ -90,11 +90,11 @@ body .boards-list { overflow-x: auto; }
 
 // header bar colors
 // =================
-body.gmg_repository.ui-dark header.navbar-gitlab { background: ${gradients.red}; }
-body.gmg_issues.ui-dark header.navbar-gitlab { background: ${gradients.green}; }
-body.gmg_projects.ui-dark header.navbar-gitlab { background: ${gradients.purple}; }
-body.gmg_merge_requests.ui-dark header.navbar-gitlab { background: ${gradients.yellow}; }
-body.gmg_todos.ui-dark header.navbar-gitlab { background: ${gradients.blue}; }
+body.gmg_repository header.navbar-gitlab { background: ${gradients.red}; }
+body.gmg_issues header.navbar-gitlab { background: ${gradients.green}; }
+body.gmg_projects header.navbar-gitlab { background: ${gradients.purple}; }
+body.gmg_merge_requests header.navbar-gitlab { background: ${gradients.yellow}; }
+body.gmg_todos header.navbar-gitlab { background: ${gradients.blue}; }
 
 // left sidebar unique colors
 // ==========================
