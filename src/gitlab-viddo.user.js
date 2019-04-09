@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Gitlab
 // @namespace    http://tampermonkey.net/
-// @version      0.4
+// @version      0.41
 // @description  Colorful gitlab!
 // @author       szkrd
 // @match        https://gitlab.viddo.net/*
@@ -243,7 +243,7 @@ a.dashboard-shortcuts-snippets { display: none !important; }
             console.error('issue id or project location not found');
             return;
         }
-        const discUrl = `${projectUriPrefix}/issues/${issueId}/discussions.json`;
+        const discUrl = `${projectUriPrefix}/issues/${issueId}/discussions.json?notes_filter=2`; // filter 2 is history
         $.getJSON(discUrl, (discussion) => {
             const notes = (discussion || []).reduce((acc, item) => {
                 acc = acc.concat(item.notes);
