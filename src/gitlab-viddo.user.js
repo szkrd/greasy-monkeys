@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Gitlab
 // @namespace    http://tampermonkey.net/
-// @version      0.41
+// @version      0.5
 // @description  Colorful gitlab!
 // @author       szkrd
 // @match        https://gitlab.viddo.net/*
@@ -62,7 +62,7 @@
     };
 
     const authorSelfColor = localStorage.getItem('authorSelfColor');
-    const currentUserName = gon.current_username
+    const currentUserName = gon.current_username;
     if (currentUserName && authorSelfColor) {
         authorColors[currentUserName] = authorSelfColor;
     }
@@ -201,6 +201,14 @@ body .gfm.gfm-issue { color: #007bff; }
   pointer-events: none;
 }
 
+// issue page navbar extra buttons
+// ===============================
+
+.gmg-board-link.gmg-board-link--mr a {
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='%23fff' d='M11 11.268V5a1 1 0 0 0-1-1H9v.793a.5.5 0 0 1-.854.353L6.354 3.354a.5.5 0 0 1 0-.708L8.146.854A.5.5 0 0 1 9 1.207V2h1a3 3 0 0 1 3 3v6.268a2 2 0 1 1-2 0zM3 4.732a2 2 0 1 1 2 0v6.536a2 2 0 1 1-2 0V4.732zM4 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm0 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm8 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2z'/%3E%3C/svg%3E") center center no-repeat;
+  background-size: 22px; width: 22px; height: 22px; display: inline-block; padding: 14px; cursor: pointer; position: relative; top: 3px; opacity: .7;
+}
+
 // trash
 // =====
 .block div.time_tracker,
@@ -221,11 +229,20 @@ a.dashboard-shortcuts-snippets { display: none !important; }
         .prepend('<button class="btn gmg-submit">Submit</submit>');
 
     // fetch all mr-s for visible mr ids
+    const fetchAllMrsForVisibleLinks = () => $('.board-card-number').filter(':visible').click();
     $(document).keypress('m', (event) => {
         if (event.ctrlKey) {
-            $('.board-card-number').filter(':visible').click();
+            fetchAllMrsForVisibleLinks();
         }
     });
+
+    // add a button to fetch mrs
+    const isBoardView = $('body .boards-list').length && window.location.pathname.endsWith('/boards');
+    if (isBoardView) {
+        const link = $('<li class="gmg-board-link gmg-board-link--mr" title="⚡ fetch visible mrs"><a id="gmg-board-link--mr"></a></li>');
+        link.appendTo('.list-unstyled.navbar-sub-nav');
+        link.on('click', fetchAllMrsForVisibleLinks);
+    }
 
     // add card title tiny button for getting merge requests
     $(document.body).on('click', (event) => {
@@ -243,7 +260,7 @@ a.dashboard-shortcuts-snippets { display: none !important; }
             console.error('issue id or project location not found');
             return;
         }
-        const discUrl = `${projectUriPrefix}/issues/${issueId}/discussions.json?notes_filter=2`; // filter 2 is history
+        const discUrl = `${projectUriPrefix}/issues/${issueId}/discussions.json?notes_filter=2`;
         $.getJSON(discUrl, (discussion) => {
             const notes = (discussion || []).reduce((acc, item) => {
                 acc = acc.concat(item.notes);
