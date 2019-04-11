@@ -261,7 +261,7 @@ a.dashboard-shortcuts-snippets { display: none !important; }
             console.error('issue id or project location not found');
             return;
         }
-        const discUrl = `${projectUriPrefix}/issues/${issueId}/discussions.json?notes_filter=0`;
+        const discUrl = `${projectUriPrefix}/issues/${issueId}/discussions.json?notes_filter=0`; // gitlab saves this value
         $.getJSON(discUrl, (discussion) => {
             const notes = (discussion || []).reduce((acc, item) => {
                 acc = acc.concat(item.notes);
