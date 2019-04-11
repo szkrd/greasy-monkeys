@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Gitlab
 // @namespace    http://tampermonkey.net/
-// @version      0.5
+// @version      0.51
 // @description  Colorful gitlab!
 // @author       szkrd
 // @match        https://gitlab.viddo.net/*
@@ -155,6 +155,7 @@ body .board-card-footer { margin: -5px 0 0; }
 body a.commit-sha { color: #ffc107 !important; }
 body .gfm.gfm-issue { color: #007bff; }
 .navbar-sub-nav li a, .navbar-sub-nav li button { color: #fff; }
+body #merge-requests > .card-slim { box-shadow: 0 0 2px #1aaa55; border: 1px solid #1aaa55; }
 
 // newly added
 // ===========
