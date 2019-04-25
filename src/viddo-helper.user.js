@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Viddo-helper
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      1.0
 // @description  fill forms and stuff
 // @author       szkrd
 // @match        http://viddo.test:4000/*
@@ -231,6 +231,7 @@
         const staticList = $('#monkey-menu-static');
         addMenuItem(staticList, 'logout', () => { window.location.href = '/logout'; });
         addMenuItem(staticList, 'tokens', printTokens);
+        addMenuItem(staticList, 'remove locale ls data', () => { localStorage.removeItem('locale'); });
         addStorageSwitcherMenuItem(staticList, 'logRedux', 'log redux', '1');
         addStorageSwitcherMenuItem(staticList, 'logHlsjs', 'log hls', '1');
         addStorageSwitcherMenuItem(staticList, 'logAxios', 'log axios', '1');
