@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Viddo-helper
 // @namespace    http://tampermonkey.net/
-// @version      1.1
+// @version      1.2
 // @description  fill forms and stuff
 // @author       szkrd
 // @match        http://viddo.test:4000/*
@@ -172,16 +172,20 @@
             addMenuItem(pathList, 'login exporter', () => { login('exporter'); });
             addMenuItem(pathList, 'login agerestricted', () => { login('agerestricted'); });
             addMenuItem(pathList, 'login admin', () => { login('admin'); });
+            addMenuItem(pathList, 'login +apple', () => { login('apple+test'); });
+            addMenuItem(pathList, 'login +pear', () => { login('pear+test'); });
+            addMenuItem(pathList, 'login +melon', () => { login('melon+test'); });
+            addMenuItem(pathList, 'login +lemon', () => { login('lemon+test'); });
         }
         if (pathName === '/registration' || pathName === '/') {
             const reg = (username) => {
                 fillInput('input[name=email]', username + '+test@viddo.com');
                 $('input[name=terms-and-conditions]:not(:checked)').click();
             };
-            addMenuItem(pathList, 'reg alma', () => { reg('alma'); });
-            addMenuItem(pathList, 'reg korte', () => { reg('korte'); });
-            addMenuItem(pathList, 'reg eper', () => { reg('eper'); });
-            addMenuItem(pathList, 'reg dinnye', () => { reg('dinnye'); });
+            addMenuItem(pathList, 'reg apple', () => { reg('apple'); });
+            addMenuItem(pathList, 'reg pear', () => { reg('pear'); });
+            addMenuItem(pathList, 'reg melon', () => { reg('melon'); });
+            addMenuItem(pathList, 'reg lemon', () => { reg('lemon'); });
             addMenuItem(pathList, 'reg random', () => { reg(randStr()); });
         }
     }
