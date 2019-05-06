@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Viddo-helper
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.1
 // @description  fill forms and stuff
 // @author       szkrd
 // @match        http://viddo.test:4000/*
@@ -127,6 +127,13 @@
         el.dispatchEvent(new Event('input', { bubbles: true }));
     }
 
+    // utils
+    // =====
+
+    function randStr () {
+        return Math.random().toString(36).replace('0.', '');
+    }
+
     // menu
     // ====
 
@@ -151,31 +158,31 @@
         lastPath = pathName;
         const pathList = $('#monkey-menu-path');
         pathList.html('');
-        if (pathName === '/') {
+        if (pathName === '/login') {
             const login = (username, password, noSubmit) => {
-                fillInput($('.input.input--text:eq(0) input[type=text]'), username);
+                fillInput($('.input.input--text:eq(0) input[type=email]'), username + '@viddo.com');
                 fillInput($('.input.input--text:eq(1) input[type=password]'), password || '123456');
                 if (!noSubmit) {
                     $('.button.button--orange:eq(0)').click();
                 }
             };
-            addMenuItem(pathList, 'login moderator', () => { login('moderatoruser'); });
-            addMenuItem(pathList, 'login uploader', () => { login('uploaderuser'); });
-            addMenuItem(pathList, 'login finance', () => { login('financeuser'); });
-            addMenuItem(pathList, 'login exporter', () => { login('exporteruser'); });
-            addMenuItem(pathList, 'login admin', () => { login('adminuser'); });
+            addMenuItem(pathList, 'login moderator', () => { login('moderator'); });
+            addMenuItem(pathList, 'login uploader', () => { login('uploader'); });
+            addMenuItem(pathList, 'login finance', () => { login('finance'); });
+            addMenuItem(pathList, 'login exporter', () => { login('exporter'); });
+            addMenuItem(pathList, 'login agerestricted', () => { login('agerestricted'); });
+            addMenuItem(pathList, 'login admin', () => { login('admin'); });
         }
-        if (pathName === '/registration') {
+        if (pathName === '/registration' || pathName === '/') {
             const reg = (username) => {
-                fillInput('input:eq(0)', username + '+test@viddo.com');
-                fillInput('input:eq(1)', username);
-                fillInput('input:eq(2)', '123456');
-                $('.radio-input__control--checkbox:eq(0)').click();
+                fillInput('input[name=email]', username + '+test@viddo.com');
+                $('input[name=terms-and-conditions]:not(:checked)').click();
             };
             addMenuItem(pathList, 'reg alma', () => { reg('alma'); });
             addMenuItem(pathList, 'reg korte', () => { reg('korte'); });
             addMenuItem(pathList, 'reg eper', () => { reg('eper'); });
             addMenuItem(pathList, 'reg dinnye', () => { reg('dinnye'); });
+            addMenuItem(pathList, 'reg random', () => { reg(randStr()); });
         }
     }
 
