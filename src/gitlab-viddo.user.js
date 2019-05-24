@@ -82,7 +82,6 @@ ${authorColorsCss}
 // board cards
 // ===========
 body div.board-card-assignee { right: 2px !important; }
-body .board-card-assignee a.user-avatar-link { position: absolute; top: 6px; right: 5px;}
 body .board-card-assignee a.user-avatar-link img { width: 25px; height: 25px; }
 body .board-card-header { margin-right: 35px; }
 body .board-card { padding: 2px 10px 2px 8px; }
