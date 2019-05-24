@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Gitlab
 // @namespace    http://tampermonkey.net/
-// @version      0.5.2
+// @version      0.5.3
 // @description  Colorful gitlab!
 // @author       szkrd
 // @match        https://gitlab.viddo.net/*
