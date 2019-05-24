@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Gitlab
 // @namespace    http://tampermonkey.net/
-// @version      0.5.3
+// @version      0.5.4
 // @description  Colorful gitlab!
 // @author       szkrd
 // @match        https://gitlab.viddo.net/*
@@ -296,15 +296,13 @@ a.dashboard-shortcuts-snippets { display: none !important; }
 
             // fetch mrs one by one along with their metadata
             openMrs.forEach(item => {
-                console.log(0, item, item.mrMetaUrl);
                 $.getJSON(item.mrMetaUrlRaw + '?serializer=sidebar_extras', mrMeta => {
-                    console.log(1, mrMeta);
                     const assignees = mrMeta.assignees || [];
                     const assigneeName = (assignees).map(user => user.name).join(', ') || 'unassigned';
                     const isHoncho = assigneeName.toLowerCase().includes('paul');
+
                     // TODO review raw data below, now it seems to be quite detailed
                     $.getJSON(item.mrMetaUrlRaw, mrMetaRaw => {
-                        console.log(2, mrMetaRaw);
                         const isMerged = mrMetaRaw.state === 'merged';
                         const isWip = mrMetaRaw.title.startsWith('WIP:');
                         const wipText = isWip ? '🔨 WIP' : '';
