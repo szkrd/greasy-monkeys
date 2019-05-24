@@ -81,10 +81,10 @@ ${authorColorsCss}
 
 // board cards
 // ===========
-body div.board-card-assignee { right: 2px !important; }
+body div.board-card-assignee { right: 3px; top: 8px; position: absolute; }
 body .board-card-assignee a.user-avatar-link img { width: 25px; height: 25px; }
 body .board-card-header { margin-right: 35px; }
-body .board-card { padding: 2px 10px 2px 8px; }
+body .board-card { padding: 2px 10px 2px 8px; position: relative; }
 body .boards-list { overflow-x: auto; }
 
 // header bar colors
@@ -147,6 +147,7 @@ body li.timeline-entry .timeline-entry-inner { padding: 2px; border: 0; }
 .board.is-expandable.is-collapsed { margin: 0 -13px; }
 .board.is-collapsed .board-inner { font-size: 10px; font-weight: normal; }
 .board.is-collapsed { width: 32px; opacity: .6; }
+.board.is-collapsed .board-title>span { margin-right: 15px; } // title alignment fix for closed boards
 body .board-card-footer { margin: -5px 0 0; }
 
 // colorize
@@ -295,10 +296,15 @@ a.dashboard-shortcuts-snippets { display: none !important; }
 
             // fetch mrs one by one along with their metadata
             openMrs.forEach(item => {
-                $.getJSON(item.mrMetaUrl, mrMeta => {
-                    const assigneeName = (mrMeta.assignee || {}).name || 'unassigned';
+                console.log(0, item, item.mrMetaUrl);
+                $.getJSON(item.mrMetaUrlRaw + '?serializer=sidebar_extras', mrMeta => {
+                    console.log(1, mrMeta);
+                    const assignees = mrMeta.assignees || [];
+                    const assigneeName = (assignees).map(user => user.name).join(', ') || 'unassigned';
                     const isHoncho = assigneeName.toLowerCase().includes('paul');
+                    // TODO review raw data below, now it seems to be quite detailed
                     $.getJSON(item.mrMetaUrlRaw, mrMetaRaw => {
+                        console.log(2, mrMetaRaw);
                         const isMerged = mrMetaRaw.state === 'merged';
                         const isWip = mrMetaRaw.title.startsWith('WIP:');
                         const wipText = isWip ? '🔨 WIP' : '';
