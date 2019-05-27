@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Gitlab
 // @namespace    http://tampermonkey.net/
-// @version      0.5.4
+// @version      0.5.5
 // @description  Colorful gitlab!
 // @author       szkrd
 // @match        https://gitlab.viddo.net/*
@@ -303,15 +303,27 @@ a.dashboard-shortcuts-snippets { display: none !important; }
 
                     // TODO review raw data below, now it seems to be quite detailed
                     $.getJSON(item.mrMetaUrlRaw, mrMetaRaw => {
+                        console.log(1, mrMetaRaw);
+                        const commitCount = mrMetaRaw.commits_count;
+                        const hasConflicts = mrMetaRaw.has_conflicts;
                         const isMerged = mrMetaRaw.state === 'merged';
                         const isWip = mrMetaRaw.title.startsWith('WIP:');
                         const wipText = isWip ? '🔨 WIP' : '';
+                        let text = wipText + ' ' + assigneeName;
+                        let title = '';
+                        if (commitCount > 0) {
+                            title += `commits: ${commitCount}`;
+                        }
+                        if (hasConflicts) {
+                            text += ' ⚡';
+                        }
                         $(`[data-mrid=${item.mrId}]`)
                             .toggleClass('gmg_mr_wip', isWip)
                             .toggleClass('gmg_mr_final', isHoncho)
                             .toggleClass('gmg_mr_merged', isMerged)
                             .find('.gmg_mr_meta')
-                            .text(wipText + ' ' + assigneeName);
+                            .attr('title', title)
+                            .text(text);
                     });
                 });
             });
