@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Gitlab
 // @namespace    http://tampermonkey.net/
-// @version      0.5.6
+// @version      0.6.0
 // @description  Colorful gitlab!
 // @author       szkrd
 // @match        https://gitlab.viddo.net/*
@@ -32,6 +32,10 @@
             $('body').addClass(`gmg_${key}`);
         }
     });
+
+    // _.get
+    const objectGet = (obj, path, def) => (() => (typeof path === 'string' ? path.replace(/\[(\d+)]/g, '.$1') : path.join('.')))()
+        .split('.').filter(Boolean).every((step) => (obj = obj[step]) !== undefined) ? obj : def;
 
     const gradients = {
         red: 'linear-gradient(to bottom, #a90329 0%,#470007 100%)',
@@ -303,6 +307,7 @@ a.dashboard-shortcuts-snippets { display: none !important; }
 
                     // TODO review raw data below, now it seems to be quite detailed
                     $.getJSON(item.mrMetaUrlRaw, mrMetaRaw => {
+                        const brokenPipe = objectGet(mrMetaRaw, 'pipeline.details.status.text') === 'failed';
                         const commitCount = mrMetaRaw.commits_count;
                         const hasConflicts = mrMetaRaw.has_conflicts;
                         const isMerged = mrMetaRaw.state === 'merged';
@@ -315,6 +320,9 @@ a.dashboard-shortcuts-snippets { display: none !important; }
                         }
                         if (hasConflicts) {
                             text += ' ⚡';
+                        }
+                        if (brokenPipe) {
+                            text += ' ❗';
                         }
                         $(`[data-mrid=${item.mrId}]`)
                             .toggleClass('gmg_mr_wip', isWip)
