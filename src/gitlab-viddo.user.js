@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Gitlab
 // @namespace    http://tampermonkey.net/
-// @version      0.5.5
+// @version      0.5.6
 // @description  Colorful gitlab!
 // @author       szkrd
 // @match        https://gitlab.viddo.net/*
@@ -303,7 +303,6 @@ a.dashboard-shortcuts-snippets { display: none !important; }
 
                     // TODO review raw data below, now it seems to be quite detailed
                     $.getJSON(item.mrMetaUrlRaw, mrMetaRaw => {
-                        console.log(1, mrMetaRaw);
                         const commitCount = mrMetaRaw.commits_count;
                         const hasConflicts = mrMetaRaw.has_conflicts;
                         const isMerged = mrMetaRaw.state === 'merged';
