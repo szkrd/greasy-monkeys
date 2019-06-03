@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Gitlab
 // @namespace    http://tampermonkey.net/
-// @version      0.6.0
+// @version      0.6.2
 // @description  Colorful gitlab!
 // @author       szkrd
 // @match        https://gitlab.viddo.net/*
@@ -165,6 +165,7 @@ body #merge-requests > .card-slim { box-shadow: 0 0 2px #1aaa55; border: 1px sol
 // ===========
 .btn.gmg-submit { margin-right: 10px; border: 1px solid #444; }
 .gmg_nav-shortcut { opacity: .6; }
+.board-card-injected ul { list-style: none; padding: 0 0 0 15px; }
 
 // left sidebar unimportant items
 // ==============================
@@ -312,17 +313,20 @@ a.dashboard-shortcuts-snippets { display: none !important; }
                         const hasConflicts = mrMetaRaw.has_conflicts;
                         const isMerged = mrMetaRaw.state === 'merged';
                         const isWip = mrMetaRaw.title.startsWith('WIP:');
-                        const wipText = isWip ? '🔨 WIP' : '';
+                        const wipText = isWip ? (commitCount > 0 ? '🛠 ' : '🔨 ') : '';
                         let text = wipText + ' ' + assigneeName;
                         let title = '';
+                        let supText = '';
                         if (commitCount > 0) {
                             title += `commits: ${commitCount}`;
                         }
-                        if (hasConflicts) {
-                            text += ' ⚡';
+                        if (hasConflicts && commitCount) {
+                            supText += '⚡';
+                            title += ' (merge conflict!)';
                         }
                         if (brokenPipe) {
-                            text += ' ❗';
+                            supText += '❗';
+                            title += ' (broken pipe!)';
                         }
                         $(`[data-mrid=${item.mrId}]`)
                             .toggleClass('gmg_mr_wip', isWip)
@@ -330,7 +334,8 @@ a.dashboard-shortcuts-snippets { display: none !important; }
                             .toggleClass('gmg_mr_merged', isMerged)
                             .find('.gmg_mr_meta')
                             .attr('title', title)
-                            .text(text);
+                            .text(text)
+                            .append(`<sup>${supText}</sup>`);
                     });
                 });
             });
