@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Gitlab
 // @namespace    http://tampermonkey.net/
-// @version      0.6.2
+// @version      0.7.0
 // @description  Colorful gitlab!
 // @author       szkrd
 // @match        https://gitlab.viddo.net/*
@@ -14,6 +14,7 @@
     // add group classes to body
     const $ = window.$;
     const gon = unsafeWindow.gon || {}; // "gon" is a gitlab global
+    const testDomain = 'viddo.tech';
     const $body = $('body');
     const currentGroup = $body.data('page').split(':')[1];
     $body.addClass('gmg_current-group_' + currentGroup);
@@ -197,8 +198,8 @@ body #merge-requests > .card-slim { box-shadow: 0 0 2px #1aaa55; border: 1px sol
 .gmg_mr_final { color: seagreen; }
 .gmg_mr_final::after { content: " 👁"; }
 .gmg_mr_merged { color: green; }
-.gmg_mr_merged::after { content: " ✅"; }
 .gmg_mr_none { color: gray; }
+.gmg_commit_id { padding: 0 3px; color: silver; letter-spacing: -1px; font-size: 12px; }
 
 // create merge request
 // ====================
@@ -308,6 +309,7 @@ a.dashboard-shortcuts-snippets { display: none !important; }
 
                     // TODO review raw data below, now it seems to be quite detailed
                     $.getJSON(item.mrMetaUrlRaw, mrMetaRaw => {
+                        const commitId = (mrMetaRaw.diff_head_sha || '').substr(0, 8);
                         const brokenPipe = objectGet(mrMetaRaw, 'pipeline.details.status.text') === 'failed';
                         const commitCount = mrMetaRaw.commits_count;
                         const hasConflicts = mrMetaRaw.has_conflicts;
@@ -317,6 +319,7 @@ a.dashboard-shortcuts-snippets { display: none !important; }
                         let text = wipText + ' ' + assigneeName;
                         let title = '';
                         let supText = '';
+                        let stageLink = null;
                         if (commitCount > 0) {
                             title += `commits: ${commitCount}`;
                         }
@@ -328,6 +331,15 @@ a.dashboard-shortcuts-snippets { display: none !important; }
                             supText += '❗';
                             title += ' (broken pipe!)';
                         }
+                        if (isMerged) {
+                            supText += '✅';
+                            title += ' (merged)';
+                            // either "diff_head_sha" or the first item
+                            // of "commits_without_merge_commits" (that has a "short_id" prop)
+                            if (commitId) {
+                                stageLink = `<a href="//${commitId}.stage.${testDomain}/" target="_blank" class="gmg_commit_id">${commitId}</a>`;
+                            }
+                        }
                         $(`[data-mrid=${item.mrId}]`)
                             .toggleClass('gmg_mr_wip', isWip)
                             .toggleClass('gmg_mr_final', isHoncho)
@@ -335,6 +347,7 @@ a.dashboard-shortcuts-snippets { display: none !important; }
                             .find('.gmg_mr_meta')
                             .attr('title', title)
                             .text(text)
+                            .append(stageLink)
                             .append(`<sup>${supText}</sup>`);
                     });
                 });
