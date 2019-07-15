@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Viddo-helper
 // @namespace    http://tampermonkey.net/
-// @version      1.2
+// @version      1.3
 // @description  fill forms and stuff
 // @author       szkrd
 // @match        http://viddo.test:4000/*
@@ -158,7 +158,7 @@
         lastPath = pathName;
         const pathList = $('#monkey-menu-path');
         pathList.html('');
-        if (pathName === '/login') {
+        if (pathName === '/') {
             const login = (username, password, noSubmit) => {
                 fillInput($('.input.input--text:eq(0) input[type=email]'), username + '@viddo.com');
                 fillInput($('.input.input--text:eq(1) input[type=password]'), password || '123456');
@@ -169,6 +169,7 @@
             addMenuItem(pathList, 'login moderator', () => { login('moderator'); });
             addMenuItem(pathList, 'login uploader', () => { login('uploader'); });
             addMenuItem(pathList, 'login finance', () => { login('finance'); });
+            addMenuItem(pathList, 'login consumer', () => { login('consumer'); });
             addMenuItem(pathList, 'login exporter', () => { login('exporter'); });
             addMenuItem(pathList, 'login agerestricted', () => { login('agerestricted'); });
             addMenuItem(pathList, 'login admin', () => { login('admin'); });
@@ -177,7 +178,7 @@
             addMenuItem(pathList, 'login +melon', () => { login('melon+test'); });
             addMenuItem(pathList, 'login +lemon', () => { login('lemon+test'); });
         }
-        if (pathName === '/registration' || pathName === '/') {
+        if (pathName === '/registration') {
             const reg = (username) => {
                 fillInput('input[name=email]', username + '+test@viddo.com');
                 $('input[name=terms-and-conditions]:not(:checked)').click();
