@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Viddo-helper
 // @namespace    http://tampermonkey.net/
-// @version      1.3
+// @version      1.3.1
 // @description  fill forms and stuff
 // @author       szkrd
 // @match        http://viddo.test:4000/*
@@ -158,7 +158,9 @@
         lastPath = pathName;
         const pathList = $('#monkey-menu-path');
         pathList.html('');
-        if (pathName === '/') {
+        // PATH SPECIFIC
+        // =============
+        if (pathName === '/login') {
             const login = (username, password, noSubmit) => {
                 fillInput($('.input.input--text:eq(0) input[type=email]'), username + '@viddo.com');
                 fillInput($('.input.input--text:eq(1) input[type=password]'), password || '123456');
@@ -178,6 +180,8 @@
             addMenuItem(pathList, 'login +melon', () => { login('melon+test'); });
             addMenuItem(pathList, 'login +lemon', () => { login('lemon+test'); });
         }
+        // PATH SPECIFIC
+        // =============
         if (pathName === '/registration') {
             const reg = (username) => {
                 fillInput('input[name=email]', username + '+test@viddo.com');
