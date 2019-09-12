@@ -1,4 +1,5 @@
 // ==UserScript==
+// @deprecated
 // @name         Slack-W
 // @namespace    http://tampermonkey.net/
 // @version      0.1
@@ -8,6 +9,10 @@
 // @grant        GM_addStyle
 // ==/UserScript==
 
+/**
+ * @deprecated
+ * (slack changes quite often, but I leave this here for copy-pasting stuff)
+ */
 (function () {
     'use strict';
 
