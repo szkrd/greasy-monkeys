@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Portal-helper
 // @namespace    http://tampermonkey.net/
-// @version      1.0.1
+// @version      1.0.3
 // @description  tries to detect react component chains (named functions and classes only)
 // @author       szkrd
 // @match        http://localhost:3001/*
@@ -11,11 +11,13 @@
 // ==/UserScript==
 (function () {
     'use strict';
+    const WAIT_TIME = 800;
     const $ = window.jQuery;
     const css = `
 #monkey-react-path { display: none; z-index: 9999; font-family: Arial; font-size: 12px; position: fixed; background: #f2f2f2; padding: 1px 3px; border-top: 1px solid #cfcfcf; border-left: 1px solid #cfcfcf; border-radius: 3px 0 0 0; bottom: 0; right: 0; }
 #monkey-react-path a { cursor: pointer; padding: 2px 3px; display: inline-block; }
 #monkey-react-path a.hidden { color: #aaa; font-size: 10px; }
+#monkey-react-path a.hidden.confusing { color: #555; }
 #monkey-react-path a:hover { text-decoration: underline; }
 `;
     GM_addStyle(css.replace(/\/\/ .*/g, ''));
@@ -40,7 +42,7 @@
         'HiddenCss'
     ];
     const hasMuiClass = node => Array.from((node || {}).classList || []).some(className => className.startsWith('Mui'));
-
+    const otherPackages = [ 'Transition' ];
     const someHocs = [ 'OutsideClickHandler' ];
 
     // if a SelectContainer is followed by a Control, then everything's part of @react-select
@@ -70,6 +72,7 @@
         const stateNodeName = ((stateNode || {}).constructor || {}).name;
         const hasTypeFn = type && (typeof type === 'object' || typeof type === 'function');
         let show = true;
+        let confusing = false;
         if (hasTypeFn) {
             name = type.name;
         } else if (stateNodeName) {
@@ -78,17 +81,22 @@
             show = false;
         }
         name = name || '';
-        const isMaterial = matUiV3CompNames.includes(name) && hasMuiClass(node.stateNode);
+        const isMaterialName = matUiV3CompNames.includes(name);
+        const isMaterialClass = hasMuiClass(node.stateNode); // unless it has been overridden :(
+        const maybeOtherPackage = otherPackages.includes(name);
         const isFontAwesomeIcon = name.startsWith('FontAwesome');
         const anotherHoc = someHocs.includes(name);
-        if (isMaterial || isFontAwesomeIcon || anotherHoc) {
+        if (isMaterialName || isFontAwesomeIcon || anotherHoc || maybeOtherPackage) {
             show = false;
+        }
+        if (isMaterialName && !isMaterialClass) {
+            confusing = true; // materialish tag name, but not materialish classes
         }
         // sometimes people mark the withStyles hoc with a postfix
         if (name.endsWith('WithStyles')) {
             name = name.replace(/WithStyles$/, '');
         }
-        return { name, show };
+        return { name, show, confusing };
     }
 
     function getElementMeta (element) {
@@ -151,10 +159,13 @@
             throttleTimer = setTimeout(() => {
                 const tree = getElementTree(e.target);
                 if (tree.length) {
-                    const html = tree.map(meta => `<a class="${meta.show ? 'visible' : 'hidden'}">${meta.name}</a>`).join(' ↘ ');
+                    const html = tree.map(meta => {
+                        const className = (meta.show ? 'visible' : 'hidden') + (meta.confusing ? ' confusing' : '');
+                        return `<a class="${className}">${meta.name}</a>`
+                    }).join(' ↘ ');
                     moReactPath.html(html);
                 }
-            }, 500);
+            }, WAIT_TIME);
         });
         return moReactPath;
     }
