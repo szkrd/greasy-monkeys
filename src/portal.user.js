@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Portal-helper
 // @namespace    http://tampermonkey.net/
-// @version      2.0.0
+// @version      2.0.1
 // @description  helper functions for portal
 // @author       szkrd
 // @match        http://localhost:3001/*
@@ -12,6 +12,7 @@
 (function () {
     'use strict';
     const WAIT_TIME = 800;
+    const DEFAULT_PORT = 3001;
     const $ = window.jQuery;
     const css = `
 #monkey-menu { width: 15px; height: 15px; position: fixed; z-index: 9999; border-radius: 10px; background: rgba(255,255,255,.2); opacity: .5; top: 3px; left: 3px; overflow: hidden; border: 1px solid gray; transition: all .2s linear; padding: 3px; }
@@ -227,6 +228,11 @@
     // Startup ↘ App ↘ Layout ↘ Checks ↘ Filter ↘ SwitchWrapper ↘ ReactSwitch
     (() => {
         createMenu();
+        // relogin may take us to the built version
+        if (+window.location.port !== DEFAULT_PORT) {
+            $('#monkey-menu').css({ backgroundColor: 'red' });
+        }
+
         const staticList = $('#monkey-menu-static');
         addMenuItem(staticList, 'remove locale ls data', () => { localStorage.removeItem('locale'); });
         addStorageSwitcherMenuItem(staticList, 'logRedux', 'use redux-logger', '1');
