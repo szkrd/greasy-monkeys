@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Portal-helper
 // @namespace    http://tampermonkey.net/
-// @version      2.1.0
+// @version      2.2.0
 // @description  helper functions for portal
 // @author       szkrd
 // @match        http://localhost:3001/*
@@ -237,6 +237,7 @@
         addMenuItem(staticList, 'remove locale ls data', () => { localStorage.removeItem('locale'); });
         addStorageSwitcherMenuItem(staticList, 'logFetch', 'log fetch', '1');
         addStorageSwitcherMenuItem(staticList, 'logRedux', 'log redux actions', '1');
+        addStorageSwitcherMenuItem(staticList, 'logGA', 'log google analytics', '1');
         addStorageSwitcherMenuItem(staticList, 'logTimeStamp', 'log with timestamps', '1');
         addStorageSwitcherMenuItem(staticList, 'logLevel', 'log verbosity all', '0');
         createReactPathLogger();
