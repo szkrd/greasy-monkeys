@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Slack condensed
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      1.0.1
 // @description  Mostly decrease list sizes in the sidebar
 // @author       szkrd
 // @match        https://app.slack.com/*
@@ -15,7 +15,7 @@
 .member_image, img.c-avatar__image, div.message_icon { filter: grayscale(100%); }
 
 // spacers in the sidebar
-div[role=presentation]:empty { display: none; }
+div.p-channel_sidebar__static_list div[role=presentation]:empty { display: none; }
 
 // ctrl-k "searchbar" nonsense in the sidebar
 div.p-channel_sidebar__navigation_bar { background: #fff; margin-top: 0; margin-bottom: 0; height: 6px; border-radius: 3px; opacity: .2; position: relative; top: -3px; }
