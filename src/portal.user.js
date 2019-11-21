@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Portal-helper
 // @namespace    http://tampermonkey.net/
-// @version      2.2.0
+// @version      2.3.0
 // @description  helper functions for portal
 // @author       szkrd
 // @match        http://localhost:3001/*
@@ -238,6 +238,7 @@
         addStorageSwitcherMenuItem(staticList, 'logFetch', 'log fetch', '1');
         addStorageSwitcherMenuItem(staticList, 'logRedux', 'log redux actions', '1');
         addStorageSwitcherMenuItem(staticList, 'logGA', 'log google analytics', '1');
+        addStorageSwitcherMenuItem(staticList, 'logHistory', 'log history.js', '1');
         addStorageSwitcherMenuItem(staticList, 'logTimeStamp', 'log with timestamps', '1');
         addStorageSwitcherMenuItem(staticList, 'logLevel', 'log verbosity all', '0');
         createReactPathLogger();
