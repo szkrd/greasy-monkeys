@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Portal-helper
 // @namespace    http://tampermonkey.net/
-// @version      2.3.0
+// @version      2.3.1
 // @description  helper functions for portal
 // @author       szkrd
 // @match        http://localhost:3001/*
@@ -11,6 +11,8 @@
 // ==/UserScript==
 (function () {
     'use strict';
+    if (![3001, 8001].includes(~~window.location.port)) return;
+
     const WAIT_TIME = 800;
     const DEFAULT_PORT = 3001;
     const $ = window.jQuery;
