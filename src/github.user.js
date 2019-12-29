@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         GitHub
 // @namespace    http://tampermonkey.net/
-// @version      0.1
-// @description  github extras
+// @version      1.2
+// @description  github plano extras
 // @author       szkrd
 // @match        https://github.com/planorama/*
 // @require      https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js
@@ -10,7 +10,6 @@
 // ==/UserScript==
 (function () {
     'use strict';
-
     const $ = window.jQuery;
     // const INTERVAL_TIME = 2000;
     // const fetchHeaderHtml = { headers: { 'Content-Type': 'text/html' }, method: 'GET', credentials: 'include' };
@@ -37,7 +36,7 @@
 .gm-pr_row_hovercard .mr-n3 { margin-right: 0 !!; }
 .gm-pr_row_hovercard .border-top { border-top: 0 !!; }
 
-// hide unneeded lines
+// hide unneeded lines, customize elements inside the hovercard
 .gm-pr_row_hovercard > div > div.f6 { display: none !!; } // name and date opened
 .gm-pr_row_hovercard > div > div.d-flex > div.d-flex > a.d-block { display: none !!; } // pr title
 .gm-pr_row_hovercard > div > div.d-flex.mt-2 > div > div.d-flex.flex-items-center { position: absolute; right: 0; margin-top: -6px; opacity: .7; } // branches
@@ -45,6 +44,12 @@
 .gm-pr_row_hovercard > div > div.d-flex > span { display: none !!; } // little merged icon
 .gm-pr_row_hovercard .gm-hc_labels_line { display: none !!; } // labels
 `;
+
+    function textToColor (str) {
+        for (var i = 0, hash = 0; i < str.length; hash = str.charCodeAt(i++) + ((hash << 5) - hash));
+        const color = Math.floor(Math.abs((Math.sin(hash) * 10000) % 1 * 16777216)).toString(16);
+        return '#' + Array(6 - color.length + 1).join('0') + color;
+    }
 
     function modifyPRList () {
         const urlParts = window.location.pathname.replace(/^\//, '').replace(/\/$/, '').split('/');
@@ -68,12 +73,20 @@
                 row.find('.IssueLabel').parent().parent().addClass('gm-hc_labels_line');
                 row.find('span:contains("You are assigned and opened")').parent().remove();
                 row.find('.gm-pr_row_hovercard span:contains("Review required")').parent().remove();
-                row.find('a:contains(Approved)')
-                    .addClass('gm-label_colored gm-label_approved')
-                    .closest('.gm-pr_row').addClass('gm-pr_row_approved');
-                row.find('a:contains(Review required)').addClass('gm-label_colored gm-label_review');
-                row.find('a:contains(Changes requested)').addClass('gm-label_colored gm-label_changesreq');
             });
+
+            // unrelated to the hover card
+            row.find('a:contains(Approved)')
+                .addClass('gm-label_colored gm-label_approved')
+                .closest('.gm-pr_row').addClass('gm-pr_row_approved');
+            row.find('a:contains(Review required)').addClass('gm-label_colored gm-label_review');
+            row.find('a:contains(Changes requested)').addClass('gm-label_colored gm-label_changesreq');
+
+            // colorize by username
+            const userEl = row.find('a.muted-link[data-hovercard-type="user"]');
+            const userName = userEl.text().trim();
+            userEl.addClass('gm-link_opened_by');
+            userEl.closest('.gm-pr_row').css({ borderLeft: `4px solid ${textToColor(userName)}` });
         });
     }
 
