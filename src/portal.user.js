@@ -1,12 +1,11 @@
 // ==UserScript==
 // @name         Portal-helper
 // @namespace    http://tampermonkey.net/
-// @version      2.3.1
+// @version      2.3.2
 // @description  helper functions for portal
 // @author       szkrd
 // @match        http://localhost:3001/*
 // @require      https://code.jquery.com/jquery-3.2.0.slim.min.js
-// @run-at       document-start
 // @grant        GM_addStyle
 // ==/UserScript==
 (function () {
