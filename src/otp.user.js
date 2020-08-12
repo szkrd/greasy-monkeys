@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         OTP
 // @namespace    http://szabolcs.kurdi.space/
-// @version      1.0.0
+// @version      1.0.1
 // @description  helps with the approval flow
 // @author       szkrd
 // @match        https://www.otpbank.hu/*
@@ -22,6 +22,8 @@
     // ---
 
     const css = `
+// otp added a chat, which is in a layer that covers the right side of the viewport (and anything underneath)
+.chat-screen.chat-screen--minimized { background: rgba(0,0,0,.2); height: calc(100% - 130px); }
 #monkey-bar { position: fixed; top: 5px; right: 0; z-index: 999; }
 #monkey-bar li { display: block; float: right; padding: 3px 6px 3px 3px; border-radius: 4px; background: silver; margin: 0 5px; cursor: pointer; box-shadow: 2px 2px 4px rgba(0,0,0,.5); transition: all .2s ease-out; }
 #monkey-bar li:hover { background: cyan; }
