@@ -13,8 +13,10 @@
     // it can run on multiple ports, if that's what we want
     if (![3000].includes(~~window.location.port)) return;
 
-    const WAIT_TIME = 800;
+    const SOURCE_WITH_LINE_COL = true; // should copy to clipboard use file path with line & col
+    const WAIT_TIME = 800; // mouse hover timeout
     const DEFAULT_PORT = 3000;
+    const BLACKLISTED_COMPONENT_NAMES = [ 'Transition', 'OutsideClickHandler', /^FontAwesome/ ];
     const $ = window.jQuery;
     const css = `
 #monkey-menu { width: 15px; height: 15px; position: fixed; z-index: 9999; border-radius: 10px; background: rgba(255,255,255,.2); opacity: .5; top: 3px; left: 3px; overflow: hidden; border: 1px solid gray; transition: all .2s linear; padding: 3px; }
@@ -36,8 +38,9 @@ html.monkey-react-path-disabled #monkey-react-path { display: none; }
     // material UI v3 component names not active for now, see portal script for details
     const matUiV3CompNames = [];
     const hasMuiClass = node => Array.from((node || {}).classList || []).some(className => className.startsWith('Mui'));
-    const otherPackages = [ 'Transition' ];
-    const someHocs = [ 'OutsideClickHandler' ];
+    const otherPackages = BLACKLISTED_COMPONENT_NAMES.filter(item => typeof item === 'string');
+    const otherPackagesRex = BLACKLISTED_COMPONENT_NAMES.filter(item => item instanceof RegExp);
+    const escapeHtml = s => String(s).replace(/&/g, '&amp;').replace(/'/g, '&#39;').replace(/"/g, '&#34;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
     // if a SelectContainer is followed by a Control, then everything's part of @react-select
     // (this is also true for other components)
@@ -63,7 +66,7 @@ html.monkey-react-path-disabled #monkey-react-path { display: none; }
         let name;
         const { stateNode } = ((node || {})._debugOwner || {});
         const type = (node._debugOwner || {}).type;
-        const stateNodeName = ((stateNode || {}).constructor || {}).name;
+        const stateNodeName = (stateNode && typeof stateNode === 'object') ? stateNode.constructor.name : '';
         const hasTypeFn = type && (typeof type === 'object' || typeof type === 'function');
         let show = true;
         let confusing = false;
@@ -74,13 +77,18 @@ html.monkey-react-path-disabled #monkey-react-path { display: none; }
         } else {
             show = false;
         }
+        let source = show && node._debugSource ? node._debugSource.fileName : ''; // full absolute file path
+        if (SOURCE_WITH_LINE_COL && node._debugSource && node._debugSource.lineNumber) {
+            source += `:${node._debugSource.lineNumber}`;
+            if (node._debugSource.columnNumber) {
+                source += `:${node._debugSource.columnNumber}`;
+            }
+        }
         name = name || '';
         const isMaterialName = matUiV3CompNames.includes(name);
         const isMaterialClass = hasMuiClass(node.stateNode); // unless it has been overridden :(
-        const maybeOtherPackage = otherPackages.includes(name);
-        const isFontAwesomeIcon = name.startsWith('FontAwesome');
-        const anotherHoc = someHocs.includes(name);
-        if (isMaterialName || isFontAwesomeIcon || anotherHoc || maybeOtherPackage) {
+        const isBlacklisted = otherPackages.includes(name) || otherPackagesRex.some(rex => rex.test(name));
+        if (isMaterialName || isBlacklisted) {
             show = false;
         }
         if (isMaterialName && !isMaterialClass) {
@@ -90,14 +98,15 @@ html.monkey-react-path-disabled #monkey-react-path { display: none; }
         if (name.endsWith('WithStyles')) {
             name = name.replace(/WithStyles$/, '');
         }
-        return { name, show, confusing };
+        return { name, show, source, confusing };
     }
 
     function getElementMeta (element) {
         let meta = { show: false };
         let node;
         for (let key in element) {
-            if (key.toLowerCase().includes('reactinternalinstance')) {
+            const keyLow = key.toLowerCase();
+            if (keyLow.includes('reactinternalinstance') || keyLow.startsWith('__react')) {
                 node = element[key];
                 meta = getNodeMeta(node);
                 break;
@@ -125,14 +134,14 @@ html.monkey-react-path-disabled #monkey-react-path { display: none; }
     }
 
     function createReactPathLogger () {
-        const moReactPath = $('<div id="monkey-react-path"></div>');
+        const moReactPath = $('<div id="monkey-react-path">&nbsp;</div>');
         moReactPath.prependTo(document.body);
         moReactPath.on('click', (e) => {
             const $el = $(e.target);
             if (!$el.is('a')) {
                 return;
             }
-            const text = $el.text(); // copy the name of the element to the clipboard
+            const text = $el.data('source') || $el.text(); // copy the path or the name of the element to the clipboard
             var copy = function (e) {
                 e.preventDefault();
                 if (e.clipboardData) {
@@ -155,7 +164,9 @@ html.monkey-react-path-disabled #monkey-react-path { display: none; }
                 if (tree.length) {
                     const html = tree.map(meta => {
                         const className = (meta.show ? 'visible' : 'hidden') + (meta.confusing ? ' confusing' : '');
-                        return `<a class="${className}">${meta.name}</a>`;
+                        const source = escapeHtml(meta.source);
+                        const name = escapeHtml(meta.name);
+                        return `<a class="${className}" data-source="${source}">${name}</a>`;
                     }).join(' ↘ ');
                     moReactPath.html(html);
                 }
