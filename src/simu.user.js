@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Simu
 // @namespace    http://tampermonkey.net/
-// @version      2.3.3
+// @version      2.4.0
 // @description  Simulator helper.
 // @author       szkrd
 // @match        http://localhost:3000/*
