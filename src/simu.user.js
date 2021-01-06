@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Simu
 // @namespace    http://tampermonkey.net/
-// @version      2.4.0
+// @version      2.3.3
 // @description  Simulator helper.
 // @author       szkrd
 // @match        http://localhost:3000/*
@@ -14,6 +14,8 @@
     if (![3000].includes(~~window.location.port)) return;
 
     const SOURCE_WITH_LINE_COL = true; // should copy to clipboard use file path with line & col
+    const SHOW_REACT_PARENTS = true;
+    const REACT_PARENTS_CUTOFF = ''; // 'Route';
     const WAIT_TIME = 800; // mouse hover timeout
     const DEFAULT_PORT = 3000;
     const BLACKLISTED_COMPONENT_NAMES = [ 'Transition', 'OutsideClickHandler', /^FontAwesome/ ];
@@ -28,10 +30,14 @@
 
 html.monkey-react-path-disabled #monkey-react-path { display: none; }
 #monkey-react-path { z-index: 9999; font-family: Arial; font-size: 12px; position: fixed; background: #f2f2f2; padding: 1px 3px; border-top: 1px solid #cfcfcf; border-left: 1px solid #cfcfcf; border-radius: 3px 0 0 0; bottom: 0; right: 0; }
-#monkey-react-path a { cursor: pointer; padding: 2px 3px; display: inline-block; }
+#monkey-react-path a { cursor: pointer; padding: 2px 3px; display: inline-block; position: relative; }
 #monkey-react-path a.hidden { color: #aaa; font-size: 10px; }
 #monkey-react-path a.hidden.confusing { color: #555; }
 #monkey-react-path a:hover { text-decoration: underline; }
+#monkey-react-path span { cursor: disabled; padding: 3px; display: block; text-align: right; color: #aaa; font-size: 11px; line-height: 12px; height: 12px; background-color: #f2f2f2; } // react parent
+#monkey-react-path span.no-dom { color: #000; }
+#monkey-react-path a b { display: none; position: absolute; bottom: 19px; right: 0; border-radius: 3px 3px 0 0; border-top: 1px solid #cfcfcf; border-left: 1px solid #cfcfcf; border-right: 1px solid #cfcfcf; }
+#monkey-react-path a:hover b { display: block; }
 `;
     GM_addStyle(css.replace(/\/\/ .*/g, ''));
 
@@ -41,6 +47,18 @@ html.monkey-react-path-disabled #monkey-react-path { display: none; }
     const otherPackages = BLACKLISTED_COMPONENT_NAMES.filter(item => typeof item === 'string');
     const otherPackagesRex = BLACKLISTED_COMPONENT_NAMES.filter(item => item instanceof RegExp);
     const escapeHtml = s => String(s).replace(/&/g, '&amp;').replace(/'/g, '&#39;').replace(/"/g, '&#34;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    const isObj = x => !!(x && typeof x === 'object');
+    const get = (obj, path, def) => {
+        const res = path.replace(/\[/g, '.').replace(/\]/g, '').replace(/^\./, '').split('.').reduce((prev, curr) => prev && prev[curr], obj);
+        return (res === undefined) ? def : res;
+    };
+    const getReactNodeName = node => {
+        const { stateNode } = ((node || {})._debugOwner || {});
+        const type = (node._debugOwner || {}).type;
+        const stateNodeName = (stateNode && typeof stateNode === 'object') ? stateNode.constructor.name : '';
+        const hasTypeFn = type && (typeof type === 'object' || typeof type === 'function');
+        return (type && (typeof type === 'object' || typeof type === 'function') && type.name) ? type.name : (stateNodeName || '');
+    }
 
     // if a SelectContainer is followed by a Control, then everything's part of @react-select
     // (this is also true for other components)
@@ -63,20 +81,44 @@ html.monkey-react-path-disabled #monkey-react-path { display: none; }
 
     // get node metadata (mostly the name)
     function getNodeMeta (node) {
-        let name;
-        const { stateNode } = ((node || {})._debugOwner || {});
-        const type = (node._debugOwner || {}).type;
-        const stateNodeName = (stateNode && typeof stateNode === 'object') ? stateNode.constructor.name : '';
-        const hasTypeFn = type && (typeof type === 'object' || typeof type === 'function');
+        const name = getReactNodeName(node);
+
+        // these are the react parents, NOT the dom parents!
+        // right now I iterate over the DOM NODES and find the associated react element
+        // which is mostly fine, BUT it can be a bit annoying when a component
+        // has no dom output (for example it shows children or hides them, or uses <></> extensively)
+        //
+        // this version creates a vertical list of the react elements up til root, but
+        // this is awkward again, because it can be very long (including the router or redux wrappers)
+        // plus with components including one another this can be significantly different
+        // from the dom output, causing confusion...
+        //
+        // to me it seems that the react dev tool does a clever mixture of this two,
+        // it starts from the dom, but then displays the react component hierarchy
+        // and if a component has dom binding, then the jump to source will jump to
+        // that point, if not, then it will just jump to the component
+        const parents = [];
+        if (SHOW_REACT_PARENTS) {
+            let parent = get(node, 'return.return'); // the first return is itself
+            if (typeof get(parent, 'return.elementType') === 'symbol') parent = null; // the topmost element is a symbol?
+            while (parent) {
+                if (isObj(parent) && typeof parent.elementType === 'function') { // string element types are dom nodes
+                    const otherName = parent.elementType.name || '?';
+                    if (otherName !== name && parents[parents.length - 1] !== otherName) { // only uniqs
+                        parents.push(parent.elementType.name || '?'); // even closures are named (probably only in debug mode)
+                    }
+                }
+                const grandParent = parent.return;
+                parent = (grandParent && typeof grandParent === 'object') ? grandParent : null;
+            }
+            if (REACT_PARENTS_CUTOFF) {
+                const cutAt = parents.indexOf(REACT_PARENTS_CUTOFF);
+                if (cutAt > -1) parents.length = cutAt;
+            }
+        }
+
         let show = true;
         let confusing = false;
-        if (hasTypeFn) {
-            name = type.name;
-        } else if (stateNodeName) {
-            name = stateNodeName;
-        } else {
-            show = false;
-        }
         let source = show && node._debugSource ? node._debugSource.fileName : ''; // full absolute file path
         if (SOURCE_WITH_LINE_COL && node._debugSource && node._debugSource.lineNumber) {
             source += `:${node._debugSource.lineNumber}`;
@@ -84,7 +126,6 @@ html.monkey-react-path-disabled #monkey-react-path { display: none; }
                 source += `:${node._debugSource.columnNumber}`;
             }
         }
-        name = name || '';
         const isMaterialName = matUiV3CompNames.includes(name);
         const isMaterialClass = hasMuiClass(node.stateNode); // unless it has been overridden :(
         const isBlacklisted = otherPackages.includes(name) || otherPackagesRex.some(rex => rex.test(name));
@@ -94,11 +135,7 @@ html.monkey-react-path-disabled #monkey-react-path { display: none; }
         if (isMaterialName && !isMaterialClass) {
             confusing = true; // materialish tag name, but not materialish classes
         }
-        // sometimes people mark the withStyles hoc with a postfix
-        if (name.endsWith('WithStyles')) {
-            name = name.replace(/WithStyles$/, '');
-        }
-        return { name, show, source, confusing };
+        return { name, show, source, confusing, reactParents: parents.reverse() };
     }
 
     function getElementMeta (element) {
@@ -162,12 +199,20 @@ html.monkey-react-path-disabled #monkey-react-path { display: none; }
             throttleTimer = setTimeout(() => {
                 const tree = getElementTree(e.target);
                 if (tree.length) {
+                    const namesOnly = tree.map(meta => meta.name);
+                    let domlessCount = 0;
                     const html = tree.map(meta => {
                         const className = (meta.show ? 'visible' : 'hidden') + (meta.confusing ? ' confusing' : '');
                         const source = escapeHtml(meta.source);
                         const name = escapeHtml(meta.name);
-                        return `<a class="${className}" data-source="${source}">${name}</a>`;
-                    }).join(' ↘ ');
+                        const reactParentsEls = meta.reactParents.map(pName => {
+                            const domless = !namesOnly.includes(pName);
+                            domlessCount += domless * 1;
+                            return `<span class="${domless ? 'no-dom' : 'dom' }">${escapeHtml(pName)}</span>`;
+                        }).join('');
+                        const reactParents = domlessCount ? `<b>${reactParentsEls}</b>` : '';
+                        return `<a class="${className}" data-source="${source}">${reactParents}${name}</a>`;
+                    }).join(' ↘ ') + (domlessCount ? ' +' : '');
                     moReactPath.html(html);
                 }
             }, WAIT_TIME);
