@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ingatlan-com
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      0.2
 // @description  Fix some annoyances on ingatlan.com
 // @author       szkrd
 // @match        https://ingatlan.com/*
@@ -24,9 +24,12 @@ button.monkey { position: absolute; left: 0; height: 20px; line-height: 18px; bo
 textarea#monkey-output { top: 0; height: 45px; }
 button#monkey-search-fix { top: 0; }
 button#monkey-header-toggle { top: 20px; }
+button#monkey-inject-hider { top: 0; left: 100px; }
 body.monkey-hide-header .site__header { display: none!!; }
 body.monkey-hide-header #szukito { position: absolute; opacity: 0; pointer-events: none; width: 0; height: 0; } // do NOT hide this crap or else the map will show broken results
 body.monkey-hide-header .site__content, body.monkey-hide-header #supportive-list { height: 100%!!; }
+button.monkey-hide-this { width: 15px; height: 15px; border-radius: 50%; box-shadow: 0 0 3px red; border: 0; background-color: maroon; position: absolute; top: 2px; left: 2px; cursor: pointer; margin: 0; padding: 0; overflow: hidden; }
+button.monkey-hide-this:hover { background-color: red; }
 `.replace(/\/\/ .*/g, '').replace(/\s?!!/g, ' !important');
 
     const main = () => {
@@ -81,6 +84,22 @@ body.monkey-hide-header .site__content, body.monkey-hide-header #supportive-list
             button.appendTo(body);
             button.on('click', () => {
                 $('body').toggleClass('monkey-hide-header');
+            });
+        }
+        // inject hider buttons
+        if (isMapPage) {
+            const button = $('<button id="monkey-inject-hider" class="monkey">inject actions</button>');
+            button.appendTo(body);
+            button.on('click', () => {
+                $('div.list-element:not(.monkey-modified)').each((i, el) => {
+                    el = $(el);
+                    el.addClass('monkey-modified');
+                    const hideButton = $('<button class="monkey-hide-this" title="hide"></button>');
+                    hideButton.on('click', () => {
+                        console.log('TODO');
+                    });
+                    hideButton.appendTo(el);
+                });
             });
         }
     };
