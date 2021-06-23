@@ -10,7 +10,7 @@
 // ==/UserScript==
 (function () {
     'use strict';
-  // runat: document start
+    // runat: document start
 
     GM_addStyle(`
     #videooverlay { display: none !important; }

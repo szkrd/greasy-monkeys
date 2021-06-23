@@ -51,8 +51,8 @@
         'HiddenCss'
     ];
     const hasMuiClass = node => Array.from((node || {}).classList || []).some(className => className.startsWith('Mui'));
-    const otherPackages = [ 'Transition' ];
-    const someHocs = [ 'OutsideClickHandler' ];
+    const otherPackages = ['Transition'];
+    const someHocs = ['OutsideClickHandler'];
 
     // if a SelectContainer is followed by a Control, then everything's part of @react-select
     // (this is also true for other components)
@@ -111,7 +111,7 @@
     function getElementMeta (element) {
         let meta = { show: false };
         let node;
-        for (let key in element) {
+        for (const key in element) {
             if (key.toLowerCase().includes('reactinternalinstance')) {
                 node = element[key];
                 meta = getNodeMeta(node);
@@ -148,7 +148,7 @@
                 return;
             }
             const text = $el.text(); // copy the name of the element to the clipboard
-            var copy = function (e) {
+            const copy = function (e) {
                 e.preventDefault();
                 if (e.clipboardData) {
                     e.clipboardData.setData('text/plain', text);

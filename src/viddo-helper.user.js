@@ -44,7 +44,7 @@
 
     function getElementName (element) {
         let name, node;
-        for (let key in element) {
+        for (const key in element) {
             if (key.toLowerCase().includes('reactinternalinstance')) {
                 node = element[key];
                 name = getNodeName(node);
@@ -82,7 +82,7 @@
                 return;
             }
             const text = $el.text() + '.tsx';
-            var copy = function (e) {
+            const copy = function (e) {
                 e.preventDefault();
                 if (e.clipboardData) {
                     e.clipboardData.setData('text/plain', text);

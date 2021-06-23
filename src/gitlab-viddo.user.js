@@ -36,7 +36,9 @@
 
     // _.get
     const objectGet = (obj, path, def) => (() => (typeof path === 'string' ? path.replace(/\[(\d+)]/g, '.$1') : path.join('.')))()
-        .split('.').filter(Boolean).every((step) => (obj = obj[step]) !== undefined) ? obj : def;
+        .split('.').filter(Boolean).every((step) => (obj = obj[step]) !== undefined)
+        ? obj
+        : def;
 
     const gradients = {
         red: 'linear-gradient(to bottom, #a90329 0%,#470007 100%)',
@@ -78,7 +80,7 @@
             `body a.user-avatar-link[href$="${name}"] img { box-shadow: 0 0 1px 3px ${color}; }`;
     }).join('\n') + '\n';
 
-    let css = `
+    const css = `
 // authors
 // =======
 body .note-header-author-name, body a.author_link span { display: inline-block; }
@@ -292,8 +294,8 @@ a.dashboard-shortcuts-snippets { display: none !important; }
             const mrList = openMrs.map(item => {
                 return `<li class="gmg_mr" data-mrid="${item.mrId}">` +
                     `<a href="${item.mrUrl}" class="gmg_mr_id">${item.mrId}:</a> ` +
-                    `<span class="gmg_mr_meta">...</span>` +
-                    `</li>`;
+                    '<span class="gmg_mr_meta">...</span>' +
+                    '</li>';
             });
             if (!mrList.length) {
                 mrList.push('<li class="gmg_mr gmg_mr_none">no mr found</li>');
@@ -316,7 +318,7 @@ a.dashboard-shortcuts-snippets { display: none !important; }
                         const isMerged = mrMetaRaw.state === 'merged';
                         const isWip = mrMetaRaw.title.startsWith('WIP:');
                         const wipText = isWip ? (commitCount > 0 ? '🛠 ' : '🔨 ') : '';
-                        let text = wipText + ' ' + assigneeName;
+                        const text = wipText + ' ' + assigneeName;
                         let title = '';
                         let supText = '';
                         let stageLink = null;

@@ -19,11 +19,11 @@
   },
   "homepage": "https://github.com/szkrd/greasy-monkeys#readme",
   "devDependencies": {
-    "eslint": "3.18.0",
-    "eslint-config-semistandard": "8.0.0",
-    "eslint-config-standard": "7.1.0",
-    "eslint-plugin-promise": "3.5.0",
-    "eslint-plugin-react": "6.10.3",
-    "eslint-plugin-standard": "2.1.1"
+    "eslint": "7.29.0",
+    "eslint-config-semistandard": "16.0.0",
+    "eslint-config-standard": "16.0.3",
+    "eslint-plugin-promise": "5.1.0",
+    "eslint-plugin-react": "7.24.0",
+    "eslint-plugin-standard": "5.0.0"
   }
 }

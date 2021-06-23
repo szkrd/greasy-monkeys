@@ -13,7 +13,7 @@
 
     const $ = window.$;
 
-    let css = `
+    const css = `
 // section headers are just fucking huge
 .section > .sectionHeader { padding: 0; background-color: rgb(124, 252, 0, .2); }
 

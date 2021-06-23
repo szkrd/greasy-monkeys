@@ -16,7 +16,7 @@
     const SOURCE_WITH_LINE_COL = true; // should copy to clipboard use file path with line & col
     const WAIT_TIME = 800; // mouse hover timeout
     const DEFAULT_PORT = 3000;
-    const BLACKLISTED_COMPONENT_NAMES = [ 'Transition', 'OutsideClickHandler', /^FontAwesome/ ];
+    const BLACKLISTED_COMPONENT_NAMES = ['Transition', 'OutsideClickHandler', /^FontAwesome/];
     const $ = window.jQuery;
     const css = `
 #monkey-menu { width: 15px; height: 15px; position: fixed; z-index: 9999; border-radius: 10px; background: rgba(255,255,255,.2); opacity: .5; top: 3px; left: 3px; overflow: hidden; border: 1px solid gray; transition: all .2s linear; padding: 3px; }
@@ -104,7 +104,7 @@ html.monkey-react-path-disabled #monkey-react-path { display: none; }
     function getElementMeta (element) {
         let meta = { show: false };
         let node;
-        for (let key in element) {
+        for (const key in element) {
             const keyLow = key.toLowerCase();
             if (keyLow.includes('reactinternalinstance') || keyLow.startsWith('__react')) {
                 node = element[key];
@@ -142,7 +142,7 @@ html.monkey-react-path-disabled #monkey-react-path { display: none; }
                 return;
             }
             const text = $el.data('source') || $el.text(); // copy the path or the name of the element to the clipboard
-            var copy = function (e) {
+            const copy = function (e) {
                 e.preventDefault();
                 if (e.clipboardData) {
                     e.clipboardData.setData('text/plain', text);

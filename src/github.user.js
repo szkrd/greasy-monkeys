@@ -14,7 +14,7 @@
     // const INTERVAL_TIME = 2000;
     // const fetchHeaderHtml = { headers: { 'Content-Type': 'text/html' }, method: 'GET', credentials: 'include' };
 
-    let prListCss = `
+    const prListCss = `
 // colorize action texts
 .gm-label_colored { display: inline-block; padding: 0 3px; border-radius: 4px; }
 .gm-label_approved { background-color: palegreen; }
@@ -65,7 +65,7 @@
 `;
 
     function textToColor (str) {
-        for (var i = 0, hash = 0; i < str.length; hash = str.charCodeAt(i++) + ((hash << 5) - hash));
+        for (var i = 0, hash = 0; i < str.length; hash = str.charCodeAt(i++) + ((hash << 5) - hash)); // eslint-disable-line
         const color = Math.floor(Math.abs((Math.sin(hash) * 10000) % 1 * 16777216)).toString(16);
         return '#' + Array(6 - color.length + 1).join('0') + color;
     }
@@ -119,7 +119,7 @@
                         if (el.className.trim() === 'TimelineItem-badge') $(el).addClass('gm-timeline_badge_single');
                     });
                     if (timelineBadges.length) {
-                        const badgeList = $(`<p class="gm-timeline_badges"></p>`);
+                        const badgeList = $('<p class="gm-timeline_badges"></p>');
                         badgeList.appendTo(container);
                         timelineBadges.appendTo(badgeList);
                     }
