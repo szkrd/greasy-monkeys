@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ingatlan-com
 // @namespace    http://tampermonkey.net/
-// @version      0.2
+// @version      0.35
 // @description  Fix some annoyances on ingatlan.com
 // @author       szkrd
 // @match        https://ingatlan.com/*
@@ -34,6 +34,7 @@ button.monkey-hide-this:hover { background-color: red; }
 
     const main = () => {
         $('head').append(`<style type="text/css">${css}</style>`);
+        const loaderClass = 'monkey-loading';
         const body = $('body');
         const header = $('header').first();
         const area = $('.parameter.parameter-area-size .parameter-value').text();
@@ -61,7 +62,6 @@ button.monkey-hide-this:hover { background-color: red; }
         if (isMapPage) {
             const button = $('<button id="monkey-search-fix" class="monkey">fix over list</button>');
             const maxThreads = 5; // play nicely, but I intentionally am not caching the results
-            const loaderClass = 'monkey-loading';
             button.appendTo(body);
             button.on('click', () => {
                 $('#overlist').find('.list-element:visible()').each((i, el) => {
@@ -93,10 +93,16 @@ button.monkey-hide-this:hover { background-color: red; }
             button.on('click', () => {
                 $('div.list-element:not(.monkey-modified)').each((i, el) => {
                     el = $(el);
+                    const id = $(el).data('id');
                     el.addClass('monkey-modified');
                     const hideButton = $('<button class="monkey-hide-this" title="hide"></button>');
+                    const data = { is_hidden: true };
                     hideButton.on('click', () => {
-                        console.log('TODO');
+                        el.addClass(loaderClass);
+                        const put = $.ajax({ type: 'PUT', url: `https://ingatlan.com/detailspage/api/${id}`, contentType: 'application/json', data: JSON.stringify(data) });
+                        put.done(() => el.fadeOut(500, () => el.remove()));
+                        put.always(() => el.removeClass(loaderClass));
+                        return false;
                     });
                     hideButton.appendTo(el);
                 });
