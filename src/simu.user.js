@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Simu
 // @namespace    http://tampermonkey.net/
-// @version      2.4.0
+// @version      2.4.1
 // @description  Simulator helper.
 // @author       szkrd
 // @match        http://localhost:3000/*
@@ -19,7 +19,7 @@
     const BLACKLISTED_COMPONENT_NAMES = ['Transition', 'OutsideClickHandler', /^FontAwesome/];
     const $ = window.jQuery;
     const css = `
-#monkey-menu { width: 15px; height: 15px; position: fixed; z-index: 9999; border-radius: 10px; background: rgba(255,255,255,.2); opacity: .5; top: 3px; left: 3px; overflow: hidden; border: 1px solid gray; transition: all .2s linear; padding: 3px; }
+#monkey-menu { width: 15px; height: 15px; position: fixed; z-index: 1000001; border-radius: 10px; background: rgba(255,255,255,.2); opacity: .5; top: 3px; left: 3px; overflow: hidden; border: 1px solid gray; transition: all .2s linear; padding: 3px; }
 #monkey-menu:hover { width: auto; height: auto; opacity: 1; border-radius: 2px; background: cyan; box-shadow: 2px 2px 2px rgba(0, 0, 0, .3); }
 #monkey-menu:hover li { display: block; }
 #monkey-menu > ul { padding: 0; margin: 0; font-size: 11px; font-weight: normal; }
@@ -27,8 +27,9 @@
 #monkey-menu li.action:hover { text-decoration: underline; }
 
 html.monkey-react-path-disabled #monkey-react-path { display: none; }
-#monkey-react-path { z-index: 9999; font-family: Arial; font-size: 12px; position: fixed; background: #f2f2f2; padding: 1px 3px; border-top: 1px solid #cfcfcf; border-left: 1px solid #cfcfcf; border-radius: 3px 0 0 0; bottom: 0; right: 0; }
+#monkey-react-path { z-index: 1000001; font-family: Arial; font-size: 12px; position: fixed; background: #f2f2f2; padding: 1px 3px; border-top: 1px solid #cfcfcf; border-left: 1px solid #cfcfcf; border-radius: 3px 0 0 0; bottom: 0; right: 0; }
 #monkey-react-path a { cursor: pointer; padding: 2px 3px; display: inline-block; }
+#monkey-react-path a.without-source { opacity: .5; }
 #monkey-react-path a.hidden { color: #aaa; font-size: 10px; }
 #monkey-react-path a.hidden.confusing { color: #555; }
 #monkey-react-path a:hover { text-decoration: underline; }
@@ -163,7 +164,8 @@ html.monkey-react-path-disabled #monkey-react-path { display: none; }
                 const tree = getElementTree(e.target);
                 if (tree.length) {
                     const html = tree.map(meta => {
-                        const className = (meta.show ? 'visible' : 'hidden') + (meta.confusing ? ' confusing' : '');
+                        let className = (meta.show ? 'visible' : 'hidden') + (meta.confusing ? ' confusing' : '');
+                        if (!meta.source) className += ' without-source';
                         const source = escapeHtml(meta.source);
                         const name = escapeHtml(meta.name);
                         return `<a class="${className}" data-source="${source}">${name}</a>`;
