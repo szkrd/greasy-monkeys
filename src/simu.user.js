@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Simu
 // @namespace    http://tampermonkey.net/
-// @version      2.4.5
+// @version      2.4.6
 // @description  Simulator helper.
 // @author       szkrd
 // @match        http://localhost:3000/*
@@ -38,7 +38,6 @@ html.monkey-react-path-disabled #monkey-react-path { display: none; }
     GM_addStyle(css.replace(/\/\/ .*/g, ''));
 
     // material UI v3 component names not active for now, see portal script for details
-    // (should I need a fluent detector, they use /^ms-/ for classNames)
     const matUiV3CompNames = [];
     const hasMuiClass = node => Array.from((node || {}).classList || []).some(className => className.startsWith('Mui'));
     const otherPackages = BLACKLISTED_COMPONENT_NAMES.filter(item => typeof item === 'string');
@@ -239,6 +238,16 @@ html.monkey-react-path-disabled #monkey-react-path { display: none; }
         $('html').toggleClass('monkey-react-path-disabled');
     }
 
+    function fluentModalFix () {
+        const marker = 'monkeyMouseMoveHack';
+        const wrapper = $(`div.ms-Fabric.ms-Layer-content > div[aria-modal="true"]:not(.${marker})`);
+        if (wrapper.length > 0) {
+            wrapper.parent().on('mousemove', reactPathMouseMoveHandler);
+            wrapper.addClass(marker);
+            console.log('[MONKEY] fluent modal fix applied');
+        }
+    }
+
     // run
     // ===
 
@@ -261,14 +270,11 @@ html.monkey-react-path-disabled #monkey-react-path { display: none; }
         createReactPathLogger();
 
         // fluent modals stop the bubbling of various events, so mousemove would not reach our topmost handler
+        // (the keyboard shortcut is needed because of their aggressive cover layer that will catch every outside click)
         if (reactPathMouseMoveHandler) {
-            addMenuItem(staticList, 'attach to fluent modal', () => {
-                const marker = 'monkeyMouseMoveHack';
-                const wrapper = $(`div.ms-Fabric.ms-Layer-content > div[aria-modal="true"]:not(.${marker})`);
-                if (wrapper.length > 0) {
-                    wrapper.parent().on('mousemove', reactPathMouseMoveHandler);
-                    wrapper.addClass(marker);
-                }
+            addMenuItem(staticList, 'attach to fluent modal', fluentModalFix);
+            $(document).on('keydown', (event) => {
+                if (event.key === 'b' && event.ctrlKey) fluentModalFix();
             });
         }
     })();
