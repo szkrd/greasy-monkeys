@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Simu
 // @namespace    http://tampermonkey.net/
-// @version      2.4.6
+// @version      2.5.0
 // @description  Simulator helper.
 // @author       szkrd
 // @match        http://localhost:3000/*
@@ -34,8 +34,31 @@ html.monkey-react-path-disabled #monkey-react-path { display: none; }
 #monkey-react-path a.hidden { color: #aaa; font-size: 10px; }
 #monkey-react-path a.hidden.confusing { color: #555; }
 #monkey-react-path a:hover { text-decoration: underline; }
+
+// style overrides for the app
+// ---------------------------
+html.monkey-style p { m0!!; p0!!; }
+
+html.monkey-style .ms-List-cell { min-height: 22px; }
+html.monkey-style div[role="row"] { height: 23px; line-height: 22px; min-height: 22px; m0; p0; }
+html.monkey-style div[role="gridcell"] { m0; p0; line-height: 1; min-height: 20px; }
+
+html.monkey-style .editor-simulationlist { m0; }
+html.monkey-style #LayerSectionContainer { m0; p0; }
+html.monkey-style div[class*="Layers_layerField"] { m0; }
+html.monkey-style p[class*="LayerConfiguration_description"] { line-height: 1; font-size: 10px; }
+html.monkey-style div[class*="EditorContainer_root"] { m0; p0; }
+html.monkey-style div[data-testid="layer-properties"] { m0; }
+html.monkey-style div[class*="CollapsibleGroup_container"] > div[class^="root"] { height: 2px; p0; }
+html.monkey-style div[class*="EditorCollapser"] { display: none; }
 `;
-    GM_addStyle(css.replace(/\/\/ .*/g, ''));
+    GM_addStyle(
+        css
+            .replace(/\/\/ .*/g, '')
+            .replace(/!!/g, ' !important') // todo: only inside curly braces!
+            .replace(/m0/g, 'margin: 0')
+            .replace(/p0/g, 'padding: 0')
+    );
 
     // material UI v3 component names not active for now, see portal script for details
     const matUiV3CompNames = [];
@@ -207,7 +230,7 @@ html.monkey-react-path-disabled #monkey-react-path { display: none; }
         menuItem.appendTo(target);
     }
 
-    function addStorageSwitcherMenuItem (target, name, text, value, actionTrue, actionFalse) {
+    function addStorageSwitcherMenuItem (target, name, text, value, actionTrue, actionFalse, runFirst) {
         const key = `_${name}`;
         const action = () => {
             const thisMenuItem = $(`#monkey-menu-switcher-${name}`);
@@ -225,6 +248,11 @@ html.monkey-react-path-disabled #monkey-react-path { display: none; }
         const current = localStorage.getItem(key);
         const title = (current ? '☑' : '☐') + ' ' + text;
         const menuItem = $(`<li id="monkey-menu-switcher-${name}">${title}</li>`);
+        if (runFirst) {
+            const current = localStorage.getItem(key);
+            if (current && actionTrue) { actionTrue(); }
+            if (!current && actionFalse) { actionFalse(); }
+        }
         menuItem.on('click', action);
         menuItem.addClass('action');
         menuItem.appendTo(target);
@@ -248,6 +276,14 @@ html.monkey-react-path-disabled #monkey-react-path { display: none; }
         }
     }
 
+    function addMonkeyStyleClass () {
+        $('html').addClass('monkey-style');
+    }
+
+    function removeMonkeyStyleClass () {
+        $('html').removeClass('monkey-style');
+    }
+
     // run
     // ===
 
@@ -267,6 +303,7 @@ html.monkey-react-path-disabled #monkey-react-path { display: none; }
         addStorageSwitcherMenuItem(staticList, 'logWebSocket', 'log websocket', '1');
         addStorageSwitcherMenuItem(staticList, 'logTimeStamp', 'log with timestamps', '1');
         addStorageSwitcherMenuItem(staticList, 'logLevel', 'log level to zero', '0');
+        addStorageSwitcherMenuItem(staticList, 'monkeyStyle', 'toggle style override', '1', addMonkeyStyleClass, removeMonkeyStyleClass, true);
         createReactPathLogger();
 
         // fluent modals stop the bubbling of various events, so mousemove would not reach our topmost handler
