@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         BBCNews
 // @namespace    http://tampermonkey.net/
-// @version      1.0.0
+// @version      1.0.1
 // @description  make BBC News, the most ad and tracker infested news site on Earth, somewhat bearable
 // @author       foobar
 // @match        https://www.bbc.com/news*
@@ -10,9 +10,12 @@
 // @run-at       document-start
 // ==/UserScript==
 (function () {
-    // FIRST THING: add `$script,domain=www.bbc.com` to uBlock Origin "My Filters" section
-    // this will thwart their script links, but not mjs and inline script, which is still
-    // needed, without those we would get a mobile-ish broken site that's only useful for seo
+    // - FIRST THING: add `$script,domain=www.bbc.com` to uBlock Origin "My Filters" section
+    //   this will thwart their script links, but not mjs and inline script, which is still
+    //   needed, without those we would get a mobile-ish broken site that's only useful for seo
+    // - also be sure that uBlock has CSP reporting disabled with `no-csp-reports: * true` in my filters
+    // - finally don't forget to disallow cookies in Firefox's settings
+    //   (Privacy & Security -> Cookies and Site Data -> Manage Exceptions -> block the bbc.com domain)
     'use strict';
     const $$ = (sel = '') => document.querySelectorAll(sel);
     const $ = (sel = '') => $$(sel)[0];
