@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Simu
 // @namespace    http://tampermonkey.net/
-// @version      2.5.0
+// @version      2.5.2
 // @description  Simulator helper.
 // @author       szkrd
 // @match        http://localhost:3000/*
@@ -38,18 +38,27 @@ html.monkey-react-path-disabled #monkey-react-path { display: none; }
 // style overrides for the app
 // ---------------------------
 html.monkey-style p { m0!!; p0!!; }
+html.monkey-style button[type="button"] { m0; p0; height: auto; }
 
 html.monkey-style .ms-List-cell { min-height: 22px; }
 html.monkey-style div[role="row"] { height: 23px; line-height: 22px; min-height: 22px; m0; p0; }
 html.monkey-style div[role="gridcell"] { m0; p0; line-height: 1; min-height: 20px; }
+html.monkey-style div[class*="ms-MessageBar"] { min-height: auto; }
+html.monkey-style div[class*="ms-MessageBar"] > div { m0; }
 
 html.monkey-style .editor-simulationlist { m0; }
 html.monkey-style #LayerSectionContainer { m0; p0; }
 html.monkey-style div[class*="Layers_layerField"] { m0; }
-html.monkey-style p[class*="LayerConfiguration_description"] { line-height: 1; font-size: 10px; }
+html.monkey-style button[class*="LayerVisibleToggle"] { m0; }
+html.monkey-style div[class*="ToggleGroup"] { p0; m0; }
+html.monkey-style div[class*="LayerConfiguration_description"],
+html.monkey-style p[class*="LayerConfiguration_description"] { m0; line-height: 1; font-size: 9px; }
 html.monkey-style div[class*="EditorContainer_root"] { m0; p0; }
 html.monkey-style div[data-testid="layer-properties"] { m0; }
+html.monkey-style div[class*="CollapsibleGroup_header"] { box-shadow: 0 0 13px 1px inset rgba(55, 97, 122, .1); border-radius: 5px; }
 html.monkey-style div[class*="CollapsibleGroup_container"] > div[class^="root"] { height: 2px; p0; }
+html.monkey-style div[class*="CollapsibleGroup_content"] div { m0!!; }
+html.monkey-style div[class*="CollapsibleGroup_button"] { min-height: 16px; min-width: 16px; m0; }
 html.monkey-style div[class*="EditorCollapser"] { display: none; }
 `;
     GM_addStyle(
