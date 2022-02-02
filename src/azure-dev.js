@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         azure dev
 // @namespace    http://tampermonkey.net/
-// @version      0.3
+// @version      0.4
 // @description  try to take over the world!
 // @author       szkrd
 // @match        https://dev.azure.com/*
@@ -32,7 +32,7 @@ td.cell-active { background-color: rgba(200, 255, 0, .2); border-radius: 5px }
 
     function addCopyBranchNameButton () {
         if ($('.pr-header-branches .monkey-clickable').length > 0) return;
-        const branchLink = $('.pr-header-branches a.bolt-link');
+        const branchLink = $('.pr-header-branches a.bolt-link').first();
         const branchName = branchLink.text();
         const dlLink = $('<a href="#" class="monkey-clickable monkey-copy-to-clipboard">📋</a>');
         dlLink.on('click', () => {
